@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const initializePassport = require('./passport-config');
 
 var authRouter = require('./routes/auth');
+var vendorRouter = require("./routes/vendor");
 
 var app = express();
 initializePassport(app);
@@ -19,21 +20,17 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', authRouter);
+app.use("/vendor", vendorRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+// Error handler for 404
+app.use((req, res, next) => {
+  res.status(404).send('Not Found');
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+// Error handler for server errors
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Server Error');
 });
 
 const dev_db_url = process.env.DEV_DB_URL;

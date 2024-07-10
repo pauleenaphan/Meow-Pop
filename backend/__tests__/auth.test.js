@@ -4,7 +4,7 @@
  */
 
 const request = require('supertest');
-const app = require('../app'); // Adjust the path as needed
+const app = require('../app'); 
 
 describe('Auth Routes', () => {
     // Test for user registration
@@ -14,7 +14,22 @@ describe('Auth Routes', () => {
         .send({
             username: 'testuser',
             email: 'testuser@example.com',
-            password: 'password123'
+            password: 'password123',
+            role: 'user'
+        });
+
+        expect(response.status).toBe(201);
+        expect(response.text).toBe('User registered');
+    });
+
+    it('should register a new vendor', async () => {
+        const response = await request(app)
+        .post('/signup')
+        .send({
+            username: 'testvendor',
+            email: 'testvendor@example.com',
+            password: 'password123',
+            role: 'vendor'
         });
 
         expect(response.status).toBe(201);
