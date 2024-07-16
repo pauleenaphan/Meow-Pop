@@ -5,12 +5,18 @@ const Product = require('../models/product');
 exports.createProduct = async (req, res) =>{
     try{
         const user = req.user;
-        console.log("USER", req.user);
-        console.log("USER ID ", user.id);
-        console.log("USER ID ", req.user.id);
+        // console.log("USER", req.user);
+        // console.log("USER ID ", user.id);
+        // console.log("USER ID ", req.user.id);
+        console.log("PARAMS ID", req.params.id);
 
         if(user.role !== "vendor"){
             return res.status(403).send("Cannot create product, you are not a vendor");
+        }
+
+        const userVendor = await Vendor.findById(req.params.id);
+        if(!userVendor){
+            return res.status(404).send('Not Found: Vendor does not exist');
         }
 
         const { name, description, category, subCategory, stock, price, imageUrl, vendor } = req.body;
@@ -23,11 +29,13 @@ exports.createProduct = async (req, res) =>{
             stock, 
             price,
             imageUrl,
-            // vendor: user.id
-            vendor
+            vendor: req.params.id
         })
-
         await newProduct.save();
+
+        userVendor.products.push(newProduct._id);
+        await userVendor.save();
+
         res.status(201).json(newProduct);
     }catch(error){
         console.error("Error creating prooduct", error);
@@ -91,20 +99,29 @@ exports.editProduct = async (req, res) =>{
     }
 }
 
-exports.deleteProduct = async (req, res) =>{
-    const user = req.user;
+exports.deleteProduct = async (req, res) => {
+    try {
+        const { productId, vendorId } = req.params;
 
-    try{
-        if(user.role !== "vendor"){
-            return res.status(403).send("Cannot create product, you are not a vendor");
+        //find the product by ID and delete it
+        const product = await Product.findByIdAndDelete(productId);
+        if (!product) {
+            return res.status(404).send('Product not found');
         }
 
-        console.log("req params in dp", req.params.id);
-        await Product.findByIdAndDelete(req.params.id);
+        //find the vendor by ID
+        const vendor = await Vendor.findById(vendorId);
+        if (!vendor) {
+            return res.status(404).send('Vendor not found');
+        }
 
-        res.status(204).send("Product has been deleted");
-    }catch(error){
-        console.error("Error deleting posts", error);
-        res.status(500).send("Error Deleting post");
+        //remove the product ID from the vendor's products array
+        vendor.products = vendor.products.filter(id => id.toString() !== productId);
+        await vendor.save();
+
+        res.status(200).send('Product deleted successfully');
+    } catch (error) {
+        console.error("Error deleting product", error);
+        res.status(500).send("Error deleting product");
     }
-}
+};

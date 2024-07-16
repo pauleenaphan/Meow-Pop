@@ -29,7 +29,7 @@ beforeAll(async () => {
 describe("Product Routes", () => {
     it("Should create a new item", async () => {
         const response = await request(app)
-            .post('/product/createProduct')
+            .post(`/product/createProduct/${createdVendorId}`)
             .set('Authorization', `Bearer ${vendorToken}`)
             .send({
                 name: "pink collar",
@@ -49,7 +49,7 @@ describe("Product Routes", () => {
 
     it("Should create another item", async () => {
         const response = await request(app)
-            .post('/product/createProduct')
+            .post(`/product/createProduct/${createdVendorId}`)
             .set('Authorization', `Bearer ${vendorToken}`)
             .send({
                 name: "long cat tree",
@@ -103,9 +103,9 @@ describe("Product Routes", () => {
 
     it("Should remove a product by ID", async () => {
         await request(app)
-            .delete(`/product/deleteProduct/${createdProductId}`)
+            .delete(`/product/deleteProduct/${createdProductId}/${createdVendorId}`)
             .set('Authorization', `Bearer ${vendorToken}`)
-            .expect(204);
+            .expect(200);
     });
 
     it("Should return 404 when trying to retrieve the deleted product", async () => {
