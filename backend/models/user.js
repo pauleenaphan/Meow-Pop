@@ -7,7 +7,7 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     role: { type: String, required: true, default: "user", enum: ['admin', 'user', 'vendor']},
     cart: { type: Schema.Types.ObjectId, ref: "Cart" },
-    purchases: { type: Schema.Types.ObjectId, ref: "Purchased" }
+    purchases: { type: Schema.Types.ObjectId, ref: "Purchase" }
 });
 
 module.exports = mongoose.model('User', userSchema);

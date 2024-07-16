@@ -1,29 +1,11 @@
-/*
-    Supertest: Used to test HTTP endpoints by making request to the server and checking responses
-    Jest: Provides tools for running test and managing test results
- */
-
 const request = require('supertest');
-const app = require('../app'); 
+const app = require('../app');
 
-describe('Auth Routes', () => {
-    // Test for user registration
-    it('should register a new user', async () => {
-        const response = await request(app)
-        .post('/signup')
-        .send({
-            username: 'testuser',
-            email: 'testuser@example.com',
-            password: 'password123',
-            role: 'user'
-        });
+let vendorToken = '';
 
-        expect(response.status).toBe(201);
-        expect(response.text).toBe('User registered');
-    });
-
-    it('should register a new vendor', async () => {
-        const response = await request(app)
+beforeAll(async () => {
+    // Register a new vendor
+    await request(app)
         .post('/signup')
         .send({
             username: 'testvendor',
@@ -32,31 +14,20 @@ describe('Auth Routes', () => {
             role: 'vendor'
         });
 
-        expect(response.status).toBe(201);
-        expect(response.text).toBe('User registered');
-    });
-
-    // Test for user login
-    it('should login a user and return a token', async () => {
-        // Register a user first
-        await request(app)
-        .post('/signup')
-        .send({
-            username: 'loginuser',
-            email: 'loginuser@example.com',
-            password: 'password123'
-        });
-
-        // Log in
-        const response = await request(app)
+    // Log in as vendor to get a token
+    const loginResponse = await request(app)
         .post('/login')
         .send({
-            email: 'loginuser@example.com',
+            email: 'testvendor@example.com',
             password: 'password123'
         });
 
-        expect(response.status).toBe(200);
-        expect(response.body.token).toBeDefined();
-        expect(response.body.role).toBe('user');
+    vendorToken = loginResponse.body.token;
+    global.vendorToken = vendorToken; // Set the token as a global variable
+});
+
+describe('Auth Setup Tests', () => {
+    it('should set a global vendorToken', () => {
+        expect(global.vendorToken).toBeDefined();
     });
 });

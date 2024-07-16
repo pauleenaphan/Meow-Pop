@@ -13,6 +13,9 @@ exports.createVendor = async (req, res) =>{
 
         const { storeName, storeDescription, products } = req.body;
 
+        console.log("User in createVendor: ", user); // Debugging line
+        console.log("User ID in createVendor: ", user.id); // Debugging line
+
         const newVendor = new Vendor({
             user: user.id,
             storeName,
@@ -35,7 +38,7 @@ exports.viewVendor = async (req, res) =>{
 
         const vendorId = req.params.id;
         console.log("VENDOR ID", vendorId);
-        const vendor = await Vendor.findById(vendorId).populate("products").exec();
+        const vendor = await Vendor.findById(vendorId).populate("user").populate("products").exec();
 
         if(!vendor){
             return res.status(404).send("Vendor not found");
