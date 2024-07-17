@@ -5,9 +5,6 @@ const Product = require('../models/product');
 exports.createProduct = async (req, res) =>{
     try{
         const user = req.user;
-        // console.log("USER", req.user);
-        // console.log("USER ID ", user.id);
-        // console.log("USER ID ", req.user.id);
         console.log("PARAMS ID", req.params.id);
 
         if(user.role !== "vendor"){

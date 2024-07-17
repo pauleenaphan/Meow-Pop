@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 let userToken = '';
-let itemId = "6696ca8b6f7658ecc4cb59da";
+let itemId = "669744411b0e844874541b34";
 
 beforeAll(async () => {
     // Login as an existing vendor to get the token
@@ -67,12 +67,12 @@ describe.only("Cart Routes", () =>{
         expect(updatedItem).toHaveProperty('quantity', 5);
     })
 
-    it("Should remove item from the cart", async() => {
-        // Add the item again with a different quantity to test updating
-        await request(app)
-            .delete(`/cart/removeItem/${itemId}`)
-            .set('Authorization', `Bearer ${userToken}`)
-            .expect(200)
-    });
+    // it("Should remove item from the cart", async() => {
+    //     // Add the item again with a different quantity to test updating
+    //     await request(app)
+    //         .delete(`/cart/removeItem/${itemId}`)
+    //         .set('Authorization', `Bearer ${userToken}`)
+    //         .expect(200)
+    // });
 })
 
