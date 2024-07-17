@@ -10,6 +10,7 @@ const initializePassport = require('./passport-config');
 var authRouter = require('./routes/auth');
 var vendorRouter = require("./routes/vendor");
 var productRouter = require("./routes/product");
+var cartRouter = require("./routes/cart");
 
 var app = express();
 initializePassport(app);
@@ -22,7 +23,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', authRouter);
 app.use("/vendor", vendorRouter);
-app.use("/product/", productRouter);
+app.use("/product", productRouter);
+app.use("/cart", cartRouter);
 
 // Error handler for 404
 app.use((req, res, next) => {

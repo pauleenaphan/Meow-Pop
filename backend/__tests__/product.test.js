@@ -5,7 +5,7 @@ require('dotenv').config();
 
 // Variables to store IDs
 let vendorToken = '';
-let createdVendorId = '6693012feece690d4e5baab5';
+let vendorId = '';
 let createdProductId = '';
 
 beforeAll(async () => {
@@ -18,18 +18,13 @@ beforeAll(async () => {
         });
 
     vendorToken = loginResponse.body.token;
+    vendorId = loginResponse.body.roleId;
 });
-
-// afterAll(async () => {
-//     // Clean up database
-//     await mongoose.connection.db.dropDatabase(); // Drop entire database or selectively clean
-//     await mongoose.connection.close();
-// });
 
 describe("Product Routes", () => {
     it("Should create a new item", async () => {
         const response = await request(app)
-            .post(`/product/createProduct/${createdVendorId}`)
+            .post(`/product/createProduct/${vendorId}`)
             .set('Authorization', `Bearer ${vendorToken}`)
             .send({
                 name: "pink collar",
@@ -39,7 +34,7 @@ describe("Product Routes", () => {
                 stock: 30,
                 price: 12,
                 imageUrl: "https://meow-pop-items.s3.us-east-2.amazonaws.com/189971_MAIN._AC_SL1200_V1709924818_.avif",
-                vendor: createdVendorId
+                vendor: vendorId
             });
 
         //saves productID so we can modify a specific product
@@ -49,7 +44,7 @@ describe("Product Routes", () => {
 
     it("Should create another item", async () => {
         const response = await request(app)
-            .post(`/product/createProduct/${createdVendorId}`)
+            .post(`/product/createProduct/${vendorId}`)
             .set('Authorization', `Bearer ${vendorToken}`)
             .send({
                 name: "long cat tree",
@@ -59,7 +54,7 @@ describe("Product Routes", () => {
                 stock: 10,
                 price: 30,
                 imageUrl: "https://meow-pop-items.s3.us-east-2.amazonaws.com/OIP.jpg",
-                vendor: createdVendorId
+                vendor: vendorId
             });
 
         expect(response.status).toBe(201);
@@ -74,7 +69,7 @@ describe("Product Routes", () => {
     });
 
     it("Should get a product by ID", async () => {
-        console.log("CREATED VENDOR ID", createdVendorId);
+        console.log("CREATED VENDOR ID", vendorId);
         const response = await request(app)
             .get(`/product/getProduct/${createdProductId}`)
             .expect(200);
@@ -82,7 +77,7 @@ describe("Product Routes", () => {
         console.log("this res body", response.body);
 
         expect(response.body).toHaveProperty('name', 'pink collar');
-        expect(response.body.vendor._id).toBe(createdVendorId);
+        expect(response.body.vendor._id).toBe(vendorId);
         expect(response.body).toHaveProperty('stock', 30);
 
         console.log("SPECIFIC PRODUCT", response.body);
@@ -103,7 +98,7 @@ describe("Product Routes", () => {
 
     it("Should remove a product by ID", async () => {
         await request(app)
-            .delete(`/product/deleteProduct/${createdProductId}/${createdVendorId}`)
+            .delete(`/product/deleteProduct/${createdProductId}/${vendorId}`)
             .set('Authorization', `Bearer ${vendorToken}`)
             .expect(200);
     });

@@ -23,6 +23,8 @@ exports.createVendor = async (req, res) =>{
             products
         })
 
+        await User.findByIdAndUpdate(user.id, { roleId: newVendor._id }, { new: true });
+
         await newVendor.save();
         res.status(201).json(newVendor);
 

@@ -8,16 +8,6 @@ let vendorToken = '';
 let createdVendorId = '';
 
 beforeAll(async () => {
-    // Register a vendor and get token
-    const signupResponse = await request(app)
-        .post('/signup')
-        .send({
-            username: 'testvendor',
-            email: 'testvendor@example.com',
-            password: 'password123',
-            role: 'vendor'
-        });
-
     const loginResponse = await request(app)
         .post('/login')
         .send({
@@ -38,12 +28,6 @@ beforeAll(async () => {
 
     createdVendorId = vendorResponse.body._id;
 });
-
-// afterAll(async () => {
-//     // Clean up database
-//     await mongoose.connection.db.dropDatabase(); // Drop entire database or selectively clean
-//     await mongoose.connection.close();
-// });
 
 describe("Vendor Routes", () => {
     it("should create a new vendor", async () => {
