@@ -47,7 +47,7 @@
     background-color: #031926;
     color: white;
     border: none;
-    z-index: 999;
+    z-index: 1;
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
 }
 

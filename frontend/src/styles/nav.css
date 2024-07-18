@@ -44,6 +44,11 @@
     color: white;
 }
 
+.icons svg:hover {
+    font-size: 30px;
+    color: #031926;
+}
+
 /* nav */
 nav{
     position: sticky;
