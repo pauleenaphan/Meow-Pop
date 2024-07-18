@@ -1,9 +1,22 @@
 // import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
-import "../styles/nav.css"
+import "../styles/nav.css";
 
 export const Navbar = () =>{
+    const navigate = useNavigate();
+    const isLoggedIn = localStorage.getItem('isLogged') === 'true';
+
+    const handleUserIconClick = () => {
+        if (isLoggedIn) {
+            navigate("/account");
+        } else {
+            navigate("/login");
+        }
+    };
+
     return(
         <header> 
             <section className="subHeader">
@@ -14,7 +27,7 @@ export const Navbar = () =>{
                 <div className="icons">
                     <FontAwesomeIcon icon={faMagnifyingGlass}/>
                     <FontAwesomeIcon icon={faCartShopping}/>
-                    <FontAwesomeIcon icon={faUser}/>
+                    <FontAwesomeIcon icon={faUser} onClick={handleUserIconClick} />
                 </div>
             </section>
             <nav>
