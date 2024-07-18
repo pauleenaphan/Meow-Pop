@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
@@ -26,6 +27,7 @@ export const Account = () => {
         products: []
     });
 
+    //!New vendor created values
     const [newVendor, setNewVendor] = useState<{ name: string; description: string }>({
         name: "",
         description: ""
@@ -37,6 +39,32 @@ export const Account = () => {
             [postField]: userInput
         }));
     };
+
+    //!New product values
+    const [newProduct, setNewProduct] = useState<{
+        name: string;
+        description: string;
+        category: string;
+        subCategory: string;
+        stock: number;
+        price: number;
+        imageUrl: File | null;
+    }>({
+        name: "",
+        description: "",
+        category: "",
+        subCategory: "",
+        stock: 0,
+        price: 0,
+        imageUrl: null
+    });
+
+    const updateProduct = (postField: keyof typeof newProduct, userInput: string | number) =>{
+        setNewProduct(prevData => ({
+            ...prevData,
+            [postField]: userInput
+        }))
+    }
 
     //!category of products
     const [categories] = useState<[string, string[]][]>([
@@ -109,6 +137,10 @@ export const Account = () => {
             console.error("Error getting specific vendor", error);
         }
     };
+
+    // const createProduct = async () =>{
+
+    // }
 
     //!renders content in the settings page based on the tab the user clicks
     const renderContent = () => {
@@ -232,16 +264,21 @@ export const Account = () => {
                             type="text"
                             placeholder="Name of your product"
                             required={true}
+                            onChange={(e) => updateProduct("name", e.target.value)}
                         />
                         <label> Description </label>
                         <textarea
                             placeholder="Short description about your product"
                             required={true}
+                            onChange={(e) => updateProduct("description", e.target.value)}
                         />
                         <label> Category </label>
                         <select
                             value={selectedCategory}
-                            onChange={handleCategoryChange}
+                            onChange={(e) => {
+                                handleCategoryChange
+                                updateProduct("category", e.target.value)
+                            }}
                         >
                             <option value="">Select a category</option>
                             {categories.map(([category], index) => (
@@ -251,13 +288,33 @@ export const Account = () => {
                         <label> Subcategory </label>
                         <select
                             disabled={!selectedCategory} //dsisable if no category selected
-                            onChange={() => {}} //set subcategory to var
+                            onChange={} //set subcategory to var
                         >
                             <option value="">Select a subcategory</option>
                             {subCategories.map((subCategory, index) => (
                                 <option key={index} value={subCategory}>{subCategory}</option>
                             ))}
                         </select>
+                        <label> Stock </label>
+                        <input 
+                            type="number" 
+                            placeholder="Item Amount"
+                            required={true}
+                            onChange={(e) => updateProduct("stock", e.target.value)}
+                        />
+                        <label> Price </label>
+                        <input 
+                            type="number"
+                            placeholder="Ex: 9.99"
+                            required={true}
+                            onChange={(e) => updateProduct("price", e.target.value)}
+                        />
+                        <label> Image of Product </label>
+                        <input
+                            type="file"
+                            required={true}
+                            onChange={(e) => updateProduct("imageUrl", e.target.value)}
+                        />
                         <button type="submit">Submit</button>
                     </form>
                 </div>
