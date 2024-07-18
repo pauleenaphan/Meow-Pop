@@ -23,7 +23,7 @@ const Home = () => {
                         showThumbs={false}
                         autoPlay 
                         infiniteLoop
-                        interval={6000}
+                        interval={5000}
                         showStatus={false}
                         showArrows={true}
                     >
