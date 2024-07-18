@@ -7,7 +7,7 @@ exports.createVendor = async (req, res) =>{
     try{
         const user = req.user;
 
-        if(user.role !== "vendor"){
+        if(user.role !== "user"){
             return res.status(403).send("Cannot create store, you are not a vendor");
         }
 
@@ -23,7 +23,7 @@ exports.createVendor = async (req, res) =>{
             products
         })
 
-        await User.findByIdAndUpdate(user.id, { roleId: newVendor._id }, { new: true });
+        await User.findByIdAndUpdate(user.id, { roleId: newVendor._id, role: "vendor" }, { new: true });
 
         await newVendor.save();
         res.status(201).json(newVendor);
