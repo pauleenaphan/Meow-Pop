@@ -6,7 +6,7 @@ require('dotenv').config();
 
 //register a new user
 exports.signup = async (req, res) => {
-    const { username, email, password, role } = req.body;
+    const { username, email, password } = req.body;
 
     try {
         //check if the user already exists
@@ -19,7 +19,7 @@ exports.signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         //create a new user and cart
-        const newUser = new User({ username, email, password: hashedPassword, role });
+        const newUser = new User({ username, email, password: hashedPassword, role: "user" });
         const newCart = new Cart({ user: newUser._id });
 
         await newCart.save();

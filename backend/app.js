@@ -6,6 +6,7 @@ var logger = require('morgan');
 require('dotenv').config();
 const mongoose = require("mongoose");
 const initializePassport = require('./passport-config');
+const cors = require('cors'); // Import cors package
 
 var authRouter = require('./routes/auth');
 var vendorRouter = require("./routes/vendor");
@@ -13,8 +14,14 @@ var productRouter = require("./routes/product");
 var cartRouter = require("./routes/cart");
 var purchaseRouter = require("./routes/purchase");
 
+
 var app = express();
 initializePassport(app);
+
+app.use(cors({ 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
