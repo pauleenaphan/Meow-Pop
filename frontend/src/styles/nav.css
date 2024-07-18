@@ -1,0 +1,121 @@
+.subHeader{
+    background-color: #468189;
+    display: flex;
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 50px;
+}
+
+.subContainer{
+    flex-grow: 1; /* subcontainer takes up all the available space */
+    text-align: center; 
+}
+
+.title{
+    font-size: 80px;
+    transition: font-size 0.3s;
+    font-family: 'Luckiest Guy', cursive;
+    font-weight: 300;
+    color: white;
+    text-decoration: none;
+}
+
+.title:hover{
+    font-size: 85px;
+    cursor: pointer;
+}
+
+.caption{
+    font-size: 25px;
+    color: white;
+}
+
+.icons {
+    display: flex;
+    gap: 10px; 
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    padding-right: 50px;
+}
+
+.icons svg {
+    font-size: 30px;
+    color: white;
+}
+
+/* nav */
+nav{
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #9DBEBB;
+}
+
+nav ul{
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    padding: 30px;
+    list-style: none;
+    font-size: 20px;
+}
+
+.categories{
+    text-decoration: none;
+    color: black;
+    position: relative; 
+    display: inline-block;
+}
+
+.categories::after {
+    content: ''; /* Empty content for the pseudo-element */
+    position: absolute;
+    left: 0;
+    bottom: -5px; /* Space between text and underline */
+    width: 100%;
+    height: 2px; /* Thickness of the underline */
+    background-color: black; /* Color of the underline */
+    transform: scaleX(0); /* Initially hide the underline */
+    transform-origin: bottom right; /* Start the animation from the right */
+    transition: transform 0.3s ease; /* Smooth animation */
+    z-index: 1000;
+}
+
+.categories:hover::after {
+    transform: scaleX(1); /* Show the underline on hover */
+    transform-origin: bottom left; /* Animate from the left */
+}
+
+/* dropdown menu */
+nav ul li {
+    position: relative; 
+}
+
+.dropdown h1{
+    padding-top: 10px;
+    font-size: 25px;
+}
+
+.dropdown a{
+    font-size: 18px;
+}
+
+nav ul li .dropdown {
+    display: none;
+    padding: 30px;
+    margin-left: -30px;
+    position: absolute;
+    background-color: #9DBEBB;
+    width: 350%;
+}
+
+nav ul li:hover .dropdown {
+    display: block; /* Show the dropdown on hover */
+}
+
+nav ul li .dropdown li a:hover {
+    color: #062c42;
+    cursor: pointer;
+    text-decoration: none !important;
+}
