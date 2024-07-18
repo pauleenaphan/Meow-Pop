@@ -20,11 +20,11 @@ const productSchema = new Schema({
             //food
             "dry food", "wet food", "grain-free food", "dental treats", "catnip",
             //health
-            "vitamins", "supplements", "flea prevention", "tick prevention", "grooming supplies",
+            "vitamins", "supplements", "flea prevention", "tick prevention",
             //grooming
             "brushes", "combs", "nail clippers", "shampoos", "conditioners", "ear cleaners", "dental care",
             //litter
-            "litter boxes", "litter mats", "litter scoops", "litter disposal", "odor control",
+            "litter boxes", "litter mats", "litter scoops", "odor control",
         ]
     },
     stock: { type: Number, required: true },

@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', authRouter);
+app.use('/auth', authRouter);
 app.use("/vendor", vendorRouter);
 app.use("/product", productRouter);
 app.use("/cart", cartRouter);
@@ -45,5 +45,10 @@ const mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
+
+const port = process.env.PORT || 3001; // Use the port specified in environment variable or default to 3000
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
 
 module.exports = app;

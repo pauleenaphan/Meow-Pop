@@ -4,7 +4,7 @@ const app = require('../app');
 describe('Auth Setup', () => {
     it('should register a vendor', async () => {
         const response = await request(app)
-            .post('/signup')
+            .post('/auth/signup')
             .send({
                 username: 'testvendor',
                 email: 'testvendor@example.com',
@@ -18,7 +18,7 @@ describe('Auth Setup', () => {
 
     it('should register a user', async () => {
         const response = await request(app)
-            .post('/signup')
+            .post('/auth/signup')
             .send({
                 username: 'testUser',
                 email: 'testuser@example.com',
