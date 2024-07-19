@@ -2,8 +2,8 @@ const User = require("../models/user");
 const Vendor = require("../models/vendor");
 const Product = require('../models/product');
 
-exports.createProduct = async (req, res) =>{
-    try{
+exports.createProduct = async (req, res) => {
+    try {
         const user = req.user;
         console.log("PARAMS ID", req.params.id);
 
@@ -16,7 +16,10 @@ exports.createProduct = async (req, res) =>{
             return res.status(404).send('Not Found: Vendor does not exist');
         }
 
-        const { name, description, category, subCategory, stock, price, imageUrl, vendor } = req.body;
+        // Extract file URLs from req.files
+        const imageUrls = req.files.map(file => file.location);
+
+        const { name, description, category, subCategory, stock, price } = req.body;
 
         const newProduct = new Product({
             name, 
@@ -25,7 +28,7 @@ exports.createProduct = async (req, res) =>{
             subCategory,
             stock, 
             price,
-            imageUrl,
+            imageUrls, // Store array of URLs
             vendor: req.params.id
         })
         await newProduct.save();
@@ -34,14 +37,15 @@ exports.createProduct = async (req, res) =>{
         await userVendor.save();
 
         res.status(201).json(newProduct);
-    }catch(error){
+    } catch (error) {
         console.error("Error creating product", error);
         res.status(500).send("Error creating product");
     }
 }
 
-//gets specific product 
-exports.getProduct = async (req, res) =>{
+// Other methods remain unchanged, if they don’t handle file uploads directly
+
+exports.getProduct = async (req, res) => {
     try{
         const productId = req.params.id;
         
@@ -58,7 +62,7 @@ exports.getProduct = async (req, res) =>{
     }
 }
 
-exports.getAllProducts = async (req, res) =>{
+exports.getAllProducts = async (req, res) => {
     try{
         const products = await Product.find().populate("vendor").exec();
 
@@ -69,7 +73,7 @@ exports.getAllProducts = async (req, res) =>{
     }
 }
 
-exports.editProduct = async (req, res) =>{
+exports.editProduct = async (req, res) => {
     try{
         const user = req.user;
 
