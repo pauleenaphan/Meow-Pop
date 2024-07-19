@@ -4,7 +4,7 @@
 
 .sectionDivider{
     margin: 100px auto;
-    padding: 2px;
+    padding: 1px;
     width: 80%; 
     background-color: black; 
 }
@@ -59,7 +59,7 @@
 
 /* !About us container */
 .aboutUsContainer{
-    padding: 10px 150px;
+    padding: 0px 10%;
     /* background-color: #9DBEBB; */
 }
 

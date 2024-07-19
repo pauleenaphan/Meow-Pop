@@ -37,31 +37,7 @@ export const Account = () => {
         }));
     };
 
-    const [newProduct, setNewProduct] = useState<{
-        name: string;
-        description: string;
-        category: string;
-        subCategory: string;
-        stock: number;
-        price: number;
-        imageUrl: File | null;
-    }>({
-        name: "",
-        description: "",
-        category: "",
-        subCategory: "",
-        stock: 0,
-        price: 0,
-        imageUrl: null
-    });
-
-    const updateProduct = (postField: keyof typeof newProduct, userInput: string | number | File | null) => {
-        setNewProduct(prevData => ({
-            ...prevData,
-            [postField]: userInput
-        }));
-    };
-
+    //new product forms
     const [categories] = useState<[string, string[]][]>([
         ["Clothes", ["Costumes", "Hats", "Socks"]],
         ["Toys", ["String Toys", "Balls", "Catnip Toys", "Plush Toys", "Laser Pointers"]],
@@ -73,8 +49,34 @@ export const Account = () => {
         ["Litter", ["Litter Boxes", "Litter Mats", "Litter Scoops", "Odor Control"]]
     ]);
 
+    const [newProduct, setNewProduct] = useState<{
+        name: string;
+        description: string;
+        category: string;
+        subCategory: string;
+        stock: number;
+        price: number;
+        imageUrls: File[];
+    }>({
+        name: "",
+        description: "",
+        category: "",
+        subCategory: "",
+        stock: 0,
+        price: 0,
+        imageUrls: []
+    });
+
+    const updateProduct = (postField: keyof typeof newProduct, userInput: string | number | File[] | null) => {
+        setNewProduct(prevData => ({
+            ...prevData,
+            [postField]: userInput
+        }));
+    };
+
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [subCategories, setSubCategories] = useState<string[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]); // State for image previews
 
     const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const category = event.target.value;
@@ -86,8 +88,55 @@ export const Account = () => {
     };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files ? event.target.files[0] : null;
-        updateProduct("imageUrl", file);
+        console.log("COMSOLE DSJALdsadasdKD");
+        if (event.target.files) {
+            console.log("COMSOLE DSJALKD");
+            const files = Array.from(event.target.files);
+            console.log('Selected files:', files); // Debugging line
+    
+            // Update imageUrls state
+            setNewProduct(prevProduct => ({
+                ...prevProduct,
+                imageUrls: [...prevProduct.imageUrls, ...files]
+            }));
+    
+            // Generate previews for new files
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            console.log('New previews:', newPreviews); // Debugging line
+            
+            // Update imagePreviews state
+            setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+        } else {
+            console.warn('No files selected.');
+        }
+    };
+    
+
+    //removes current image when user is uploading their images 
+    const removeImagePreview = (index: number) => {
+        setImagePreviews(prevPreviews => {
+            //creates shallow copy of array to avoid changing it directly
+            const newPreviews = [...prevPreviews];
+            URL.revokeObjectURL(newPreviews[index]);
+
+            //removes img at specific index
+            newPreviews.splice(index, 1);
+
+            //returns updated array
+            return newPreviews;
+        });
+    
+        //remove the corresponding image file from newProduct
+        setNewProduct(prevProduct => {
+            const newFiles = [...prevProduct.imageUrls];
+            newFiles.splice(index, 1);
+
+            //return updated newProduct object includign modified imgURL array
+            return {
+                ...prevProduct,
+                imageUrls: newFiles
+            };
+        });
     };
 
     const createVendor = async (event: React.FormEvent) => {
@@ -140,28 +189,44 @@ export const Account = () => {
 
     const createProduct = async (event: React.FormEvent) => {
         event.preventDefault();
-        const { name, description, category, subCategory, stock, price, imageUrl } = newProduct;
+        const { name, description, category, subCategory, stock, price, imageUrls } = newProduct;
+    
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('category', category);
+        formData.append('subCategory', subCategory);
+        formData.append('stock', stock.toString());
+        formData.append('price', price.toString());
+    
+        // Add each file to the FormData
+        imageUrls.forEach(file => {
+            formData.append('images', file); // Ensure the field name matches
+        });
 
+        formData.forEach((value, key) => {
+            console.log(`${key}:`, value);
+        });
+    
         try {
             const response = await fetch(`http://localhost:3001/product/createProduct/${vendorId}`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ 
-                    name, description, category, subCategory, stock, price, imageUrl })
+                body: formData
             });
-
+    
             if (response.ok) {
                 alert("Item has been created");
-                //call get products again
             }
         } catch (error) {
-            console.error("Error creating product");
+            console.error("Error creating product", error);
         }
+        setNewProductModal(false);
+        viewVendor();
     };
-
+    
     const renderContent = () => {
         switch (currContent) {
             case "profile":
@@ -188,6 +253,24 @@ export const Account = () => {
                             <br></br>
                             <h2> Your Products </h2>
                             <button onClick={() => setNewProductModal(true)}> Add a new Product </button>
+                            <div>
+                                {vendorInfo.products.length > 0 ? (
+                                    vendorInfo.products.map(product => (
+                                        <div key={product._id} style={{ marginBottom: '20px' }}>
+                                            <h3>{product.name}</h3>
+                                            <p>{product.description}</p>
+                                            <p>Category: {product.category}</p>
+                                            <p>Sub Category: {product.subCategory}</p>
+                                            <p>Stock: {product.stock}</p>
+                                            <p>Price: ${product.price}</p>
+                                            <img src={product.imageUrl} style={{ width: '100px', height: '100px' }} />
+                                            <h1> link: {product.imageUrl} </h1>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No products available.</p>
+                                )}
+                            </div>
                         </div>
                     );
                 } else { //user is not a vendor
@@ -250,7 +333,11 @@ export const Account = () => {
         if (localStorage.getItem("userRole") === "vendor") {
             viewVendor();
         }
-    }, []);
+        return () => {
+            //used to relese the memory allocated for the object URL
+            imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+        };
+    }, [imagePreviews]);
 
     return (
         <>
@@ -260,7 +347,10 @@ export const Account = () => {
                     <div className="rowContainer" onClick={() => setCurrContent("profile")}>
                         <FontAwesomeIcon icon={faUser} /> Profile
                     </div>
-                    <div className="rowContainer" onClick={() => setCurrContent("vendor")}>
+                    <div className="rowContainer" onClick={() => {
+                        setCurrContent("vendor") 
+                        viewVendor()} 
+                        }>
                         <FontAwesomeIcon icon={faGear} /> Vendor
                     </div>
                     <div className="rowContainer" onClick={() => setCurrContent("purchases")}>
@@ -328,13 +418,32 @@ export const Account = () => {
                             onChange={(e) => updateProduct("price", Number(e.target.value))}
                             required
                         />
-                        <label> Image: </label>
+                        <label> Images: </label>
+                        <p> You can have up to 10 images </p>
                         <input
                             type="file"
                             accept="image/*"
+                            multiple
                             onChange={handleFileChange}
                             required
                         />
+                        <div className="imagePreviews">
+                            {imagePreviews.map((preview, index) => (
+                                <div key={index} style={{ position: 'relative', display: 'inline-block', margin: '5px' }}>
+                                    <img src={preview} alt={`Preview ${index}`} style={{ width: '100px', height: '100px' }} />
+                                    <button
+                                        onClick={() => removeImagePreview(index)}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            right: 0,
+                                        }}
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                         <button type="submit"> Add Product </button>
                     </form>
                 </div>
