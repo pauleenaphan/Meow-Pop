@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
 import Modal from '../components/Modal';
 import "../styles/account.css";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faMoneyBill, faClockRotateLeft, faGear } from '@fortawesome/free-solid-svg-icons';
 
@@ -27,7 +25,6 @@ export const Account = () => {
         products: []
     });
 
-    //!New vendor created values
     const [newVendor, setNewVendor] = useState<{ name: string; description: string }>({
         name: "",
         description: ""
@@ -40,7 +37,6 @@ export const Account = () => {
         }));
     };
 
-    //!New product values
     const [newProduct, setNewProduct] = useState<{
         name: string;
         description: string;
@@ -59,14 +55,13 @@ export const Account = () => {
         imageUrl: null
     });
 
-    const updateProduct = (postField: keyof typeof newProduct, userInput: string | number) =>{
+    const updateProduct = (postField: keyof typeof newProduct, userInput: string | number | File | null) => {
         setNewProduct(prevData => ({
             ...prevData,
             [postField]: userInput
-        }))
-    }
+        }));
+    };
 
-    //!category of products
     const [categories] = useState<[string, string[]][]>([
         ["Clothes", ["Costumes", "Hats", "Socks"]],
         ["Toys", ["String Toys", "Balls", "Catnip Toys", "Plush Toys", "Laser Pointers"]],
@@ -81,13 +76,18 @@ export const Account = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [subCategories, setSubCategories] = useState<string[]>([]);
 
-    const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const category = event.target.value;
         setSelectedCategory(category); //updates selected category with the chosen one
+        updateProduct("category", category);
 
-        //finds and sets the subcategory based on the chosen category
         const selectedCategory = categories.find(([cat]) => cat === category);
         setSubCategories(selectedCategory ? selectedCategory[1] : []);
+    };
+
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files ? event.target.files[0] : null;
+        updateProduct("imageUrl", file);
     };
 
     const createVendor = async (event: React.FormEvent) => {
@@ -138,11 +138,30 @@ export const Account = () => {
         }
     };
 
-    // const createProduct = async () =>{
+    const createProduct = async (event: React.FormEvent) => {
+        event.preventDefault();
+        const { name, description, category, subCategory, stock, price, imageUrl } = newProduct;
 
-    // }
+        try {
+            const response = await fetch(`http://localhost:3001/product/createProduct/${vendorId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ 
+                    name, description, category, subCategory, stock, price, imageUrl })
+            });
 
-    //!renders content in the settings page based on the tab the user clicks
+            if (response.ok) {
+                alert("Item has been created");
+                //call get products again
+            }
+        } catch (error) {
+            console.error("Error creating product");
+        }
+    };
+
     const renderContent = () => {
         switch (currContent) {
             case "profile":
@@ -161,7 +180,6 @@ export const Account = () => {
                 );
             case "vendor":
                 if (localStorage.getItem("userRole") === "vendor") {
-                    viewVendor();
                     return (
                         <div>
                             <h1> Vendor </h1>
@@ -222,103 +240,105 @@ export const Account = () => {
                     </div>
                 );
             default:
-                return null; // Render nothing if currContent is empty or undefined
+                return null;
         }
     };
 
+    const closeModal = () => setNewProductModal(false);
+
+    useEffect(() => {
+        if (localStorage.getItem("userRole") === "vendor") {
+            viewVendor();
+        }
+    }, []);
+
     return (
-        <div>
+        <>
             <Header />
             <div className="accPageContainer">
                 <div className="sideContainer">
                     <div className="rowContainer" onClick={() => setCurrContent("profile")}>
-                        <FontAwesomeIcon icon={faUser} />
-                        <a> Profile </a>
+                        <FontAwesomeIcon icon={faUser} /> Profile
                     </div>
                     <div className="rowContainer" onClick={() => setCurrContent("vendor")}>
-                        <FontAwesomeIcon icon={faMoneyBill} />
-                        <a> Vendor </a>
+                        <FontAwesomeIcon icon={faGear} /> Vendor
                     </div>
                     <div className="rowContainer" onClick={() => setCurrContent("purchases")}>
-                        <FontAwesomeIcon icon={faClockRotateLeft} />
-                        <a> Purchase History </a>
+                        <FontAwesomeIcon icon={faMoneyBill} /> Purchases
                     </div>
                     <div className="rowContainer" onClick={() => setCurrContent("settings")}>
-                        <FontAwesomeIcon icon={faGear} />
-                        <a> Settings </a>
+                        <FontAwesomeIcon icon={faClockRotateLeft} /> Settings
                     </div>
                 </div>
                 <div className="divider"></div>
-
                 <div className="contentContainer">
                     {renderContent()}
                 </div>
             </div>
-
-            <Modal show={newProductModal} onClose={() => setNewProductModal(false)}>
-                <div className="modal">
-                    <h2> New Product </h2>
-                    <form className="newProductForm">
-                        <label> Name </label>
+            <Modal show={newProductModal} onClose={closeModal}>
+                <div>
+                    <h1> Add a new product </h1>
+                    <form className="productForm" onSubmit={createProduct}>
+                        <label> Name: </label>
                         <input
                             type="text"
-                            placeholder="Name of your product"
-                            required={true}
+                            value={newProduct.name}
                             onChange={(e) => updateProduct("name", e.target.value)}
+                            required
                         />
-                        <label> Description </label>
+                        <label> Description: </label>
                         <textarea
-                            placeholder="Short description about your product"
-                            required={true}
+                            value={newProduct.description}
                             onChange={(e) => updateProduct("description", e.target.value)}
+                            required
                         />
-                        <label> Category </label>
+                        <label> Category: </label>
                         <select
-                            value={selectedCategory}
-                            onChange={(e) => {
-                                handleCategoryChange
-                                updateProduct("category", e.target.value)
-                            }}
+                            value={newProduct.category}
+                            onChange={handleCategoryChange}
+                            required
                         >
                             <option value="">Select a category</option>
-                            {categories.map(([category], index) => (
-                                <option key={index} value={category}>{category}</option>
+                            {categories.map(([category]) => (
+                                <option key={category} value={category}>{category}</option>
                             ))}
                         </select>
-                        <label> Subcategory </label>
+                        <label> Sub Category: </label>
                         <select
-                            disabled={!selectedCategory} //dsisable if no category selected
-                            onChange={} //set subcategory to var
+                            value={newProduct.subCategory}
+                            onChange={(e) => updateProduct("subCategory", e.target.value)}
+                            required
                         >
                             <option value="">Select a subcategory</option>
-                            {subCategories.map((subCategory, index) => (
-                                <option key={index} value={subCategory}>{subCategory}</option>
+                            {subCategories.map((subCategory) => (
+                                <option key={subCategory} value={subCategory}>{subCategory}</option>
                             ))}
                         </select>
-                        <label> Stock </label>
-                        <input 
-                            type="number" 
-                            placeholder="Item Amount"
-                            required={true}
-                            onChange={(e) => updateProduct("stock", e.target.value)}
-                        />
-                        <label> Price </label>
-                        <input 
+                        <label> Stock: </label>
+                        <input
                             type="number"
-                            placeholder="Ex: 9.99"
-                            required={true}
-                            onChange={(e) => updateProduct("price", e.target.value)}
+                            value={newProduct.stock}
+                            onChange={(e) => updateProduct("stock", Number(e.target.value))}
+                            required
                         />
-                        <label> Image of Product </label>
+                        <label> Price: </label>
+                        <input
+                            type="number"
+                            value={newProduct.price}
+                            onChange={(e) => updateProduct("price", Number(e.target.value))}
+                            required
+                        />
+                        <label> Image: </label>
                         <input
                             type="file"
-                            required={true}
-                            onChange={(e) => updateProduct("imageUrl", e.target.value)}
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            required
                         />
-                        <button type="submit">Submit</button>
+                        <button type="submit"> Add Product </button>
                     </form>
                 </div>
             </Modal>
-        </div>
+        </>
     );
 };
