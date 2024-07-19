@@ -2,35 +2,45 @@ const User = require("../models/user");
 const Vendor = require("../models/vendor");
 const Product = require('../models/product');
 
+const uploadToS3 = require('../middleware/s3Service');
+
 exports.createProduct = async (req, res) => {
     try {
         const user = req.user;
-        console.log("PARAMS ID", req.params.id);
 
-        if(user.role !== "vendor"){
+        if (user.role !== "vendor") {
             return res.status(403).send("Cannot create product, you are not a vendor");
         }
 
         const userVendor = await Vendor.findById(req.params.id);
-        if(!userVendor){
+        if (!userVendor) {
             return res.status(404).send('Not Found: Vendor does not exist');
         }
 
-        // Extract file URLs from req.files
-        const imageUrls = req.files.map(file => file.location);
+        const files = req.files;
+        if (!files || files.length === 0) {
+            return res.status(400).send("No files uploaded.");
+        }
+
+        console.log("Files to upload:", files);
+
+        const uploadedFiles = await uploadToS3(files);
+        console.log("Uploaded files:", uploadedFiles);
+
+        const imageUrls = uploadedFiles.map(file => file.Location);
 
         const { name, description, category, subCategory, stock, price } = req.body;
 
         const newProduct = new Product({
-            name, 
+            name,
             description,
             category,
             subCategory,
-            stock, 
+            stock,
             price,
-            imageUrls, // Store array of URLs
+            imageUrls,
             vendor: req.params.id
-        })
+        });
         await newProduct.save();
 
         userVendor.products.push(newProduct._id);
@@ -41,9 +51,7 @@ exports.createProduct = async (req, res) => {
         console.error("Error creating product", error);
         res.status(500).send("Error creating product");
     }
-}
-
-// Other methods remain unchanged, if they don’t handle file uploads directly
+};
 
 exports.getProduct = async (req, res) => {
     try{
