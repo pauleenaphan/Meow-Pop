@@ -16,6 +16,7 @@ export const Account = () => {
     const [newProductModal, setNewProductModal] = useState<boolean>(false);
     const [editVendorModal, setEditVendorModal] = useState<boolean>(false);
     const [editProductModal, setEditProductModal] = useState<boolean>(false);
+    const [confirmModal, setConfirmModal] = useState<boolean>(false)
     const [currProduct, setCurrProduct] = useState<{
         id: string,
         name: string, 
@@ -36,7 +37,7 @@ export const Account = () => {
         imageUrls: []
     })
 
-    const updateCurrProduct = (postField: keyof typeof currProduct, userInput: string) =>{
+    const updateCurrProduct = (postField: keyof typeof currProduct, userInput: string | number | (string | File)[]) =>{
         setCurrProduct(prevData => ({
             ...prevData,
             [postField]: userInput
@@ -378,6 +379,26 @@ export const Account = () => {
             console.error("Error editing product", error);
         }
     };
+
+    const removeProduct = async () =>{
+        try{
+            const response = await fetch(`http://localhost:3001/product/deleteProduct/${currProduct.id}/${vendorId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                mode: "cors"
+            })
+
+            if(response.ok){
+                alert("product was deleted");
+                viewVendor();
+                setConfirmModal(false);
+            }
+        }catch(error){
+            console.error("Error deleting product");
+        }
+    }
     
     const renderContent = () => {
         switch (currContent) {
@@ -425,7 +446,11 @@ export const Account = () => {
                                                 getProduct(product._id);
                                                 setEditProductModal(true);
                                             }}> Edit Product </button>
-                                            <button> Remove Product </button>
+                                            <button onClick={() =>{
+                                                updateCurrProduct("id", product._id);
+                                                updateCurrProduct("name", product.name);
+                                                setConfirmModal(true);
+                                            }}> Remove Product </button>
                                         </div>
                                     ))
                                 ) : (
@@ -736,6 +761,13 @@ export const Account = () => {
                     </div>
                     <button type="submit"> Update Product </button>
                 </form>
+            </Modal>
+            
+            <Modal show={confirmModal} onClose={closeModal}>
+                <p> Are you sure you want to remove this product? </p>
+                <h1> {currProduct.name} </h1>
+                <button onClick={removeProduct}> Confirm </button> 
+                <button onClick={() =>{ setConfirmModal(false)}}> Cancel </button>
             </Modal>
         </>
     );
