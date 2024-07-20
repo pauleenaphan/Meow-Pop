@@ -56,6 +56,7 @@ exports.login = async (req, res) => {
             roleId: user.roleId };
 
         //token is used for authenticating and authorizing users when they make requests
+        //IMPLEMENT TOKEN REFRESHHH!
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10h' });
         res.json({ token, role: user.role, roleId: user.roleId });
     } catch (error) {

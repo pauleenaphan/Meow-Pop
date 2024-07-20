@@ -19,6 +19,8 @@ const upload = multer({
     limits: { fileSize: 50 * 1024 * 1024 } // 50MB file size limit
 });
 
+const uploadMiddleware = upload.array('images');
+
 // Function to upload files directly to S3
 const uploadToS3 = async (files) => {
     const uploadPromises = files.map(file => {
@@ -37,4 +39,5 @@ const uploadToS3 = async (files) => {
     return Promise.all(uploadPromises);
 };
 
-module.exports = { upload, uploadToS3 };
+
+module.exports = { upload, uploadToS3, uploadMiddleware };

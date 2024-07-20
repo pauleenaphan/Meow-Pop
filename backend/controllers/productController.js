@@ -82,31 +82,71 @@ exports.getAllProducts = async (req, res) => {
 }
 
 exports.editProduct = async (req, res) => {
-    try{
+    try {
         const user = req.user;
 
-        if(user.role !== "vendor"){
-            return res.status(403).send("Cannot create product, you are not a vendor");
+        if (user.role !== "vendor") {
+            return res.status(403).send("Cannot edit product, you are not a vendor");
         }
 
-        const { name, description, category, subCategory, stock, price, imageUrl } = req.body;
+        // Find the existing product
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).send("Product not found");
+        }
 
+        // Extract the existing image URLs from the request body
+        let existingUrls = [];
+        if (req.body.existingUrls) {
+            existingUrls = JSON.parse(req.body.existingUrls);
+        }
+
+        // Check if files were uploaded
+        const files = req.files;
+        let newImageUrls = [];
+
+        if (files && files.length > 0) {
+            // Upload files to S3
+            const uploadedFiles = await uploadToS3(files);
+
+            // Get the S3 URLs of uploaded images
+            newImageUrls = uploadedFiles.map(file => file.Location);
+        }
+
+        // Combine existing image URLs and new image URLs
+        const imageUrls = [...existingUrls, ...newImageUrls];
+
+        // Extract other product details from request body
+        const { name, description, category, subCategory, stock, price } = req.body;
+
+        // Update product details
         const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id,
-            { name, description, category, subCategory, stock, price, imageUrl },
-            { new: true } 
-        )
+            {
+                name: name || product.name,
+                description: description || product.description,
+                category: category || product.category,
+                subCategory: subCategory || product.subCategory,
+                stock: stock || product.stock,
+                price: price || product.price,
+                imageUrls: imageUrls.length > 0 ? imageUrls : product.imageUrls // Update only if new images are provided
+            },
+            { new: true }
+        );
 
-        if(!updatedProduct){
+        if (!updatedProduct) {
             return res.status(404).send("Product not found");
         }
 
         res.status(200).json(updatedProduct);
-    }catch(error){
+    } catch (error) {
         console.error("Error editing product", error);
         res.status(500).send("Error editing product");
     }
-}
+};
+
+
+
 
 exports.deleteProduct = async (req, res) => {
     try {
