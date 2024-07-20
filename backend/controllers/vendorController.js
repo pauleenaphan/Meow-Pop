@@ -75,8 +75,8 @@ exports.editVendor = async (req, res) => {
 
         //checks if the user's id and storename (set to the user's id) matches 
         if (vendor.user.toString() !== user.id.toString()) {
-            // console.log("VENDOR ", vendor.user.toString());
-            // console.log("USER ID ", user.id.toString());
+            console.log("VENDOR ", vendor.user.toString());
+            console.log("USER ID ", user.id.toString());
             return res.status(403).send("You are not authorized to edit this store");
         }
 
