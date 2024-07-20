@@ -404,53 +404,79 @@ export const Account = () => {
         switch (currContent) {
             case "profile":
                 return (
-                    <div>
-                        <h1>Profile </h1>
-                        <h2> Email: </h2>
-                        <p> {vendorInfo.user.email} </p>
-                        <h2> Username: </h2>
-                        <p> {vendorInfo.user.username} </p>
-                        <h2> Current Role: </h2>
-                        <p> {userRole} </p>
-                        <h2> VendorId: </h2>
-                        <p> {vendorId} </p>
+                    <div className="profileSettings">
+                        <h1 className="profileHeader"> User Information </h1>
+                        <div className="profileInfoContainer">
+                            <div className="infoContainer">
+                                <h3> Email: </h3>
+                                <p> {vendorInfo.user.email} </p>
+                            </div>
+                            <div className="infoContainer">
+                                <h3> Username: </h3>
+                                <p> {vendorInfo.user.username} </p>
+                            </div>
+                            <div className="infoContainer">
+                                <h3> Current Role: </h3>
+                                <p> {userRole} </p>
+                            </div>
+                            <div className="infoContainer">
+                                <h3> VendorId: </h3>
+                                <p> {vendorId} </p>
+                            </div>
+                            
+                        </div>
+                        
                     </div>
                 );
             case "vendor":
                 if (userRole === "vendor") {
                     return (
-                        <div>
-                            <h1> Vendor </h1>
-                            <h2> {vendorInfo.storeName} </h2>
-                            <button onClick={() =>{ setEditVendorModal(true)}}> Edit your store </button>
-                            <p> {vendorInfo.storeDescription} </p>
+                        <div className="vendorSettings">
+                            {/* <h1> Vendor </h1> */}
+                            <div className="btnTitleContainer">
+                                <h1> {vendorInfo.storeName} </h1>
+                                <button className="headerBtn" onClick={() =>{ setEditVendorModal(true)}}> Edit your store </button>
+                            </div>
+                            
+                            <p className="vendorDesc"> {vendorInfo.storeDescription} </p>
                             <br></br>
-                            <h2> Your Products </h2>
-                            <button onClick={() => setNewProductModal(true)}> Add a new Product </button>
+                            <div className="btnTitleContainer">
+                                <h2> Your Products </h2>
+                                <button className="headerBtn" onClick={() => setNewProductModal(true)}> Add a new Product </button>
+                            </div>
+                            
                             <div>
                                 {vendorInfo.products.length > 0 ? (
                                     vendorInfo.products.map(product => (
-                                        <div key={product._id} style={{ marginBottom: '20px' }}>
-                                            <h3>{product.name}</h3>
-                                            <p>{product.description}</p>
-                                            <p>Category: {product.category}</p>
-                                            <p>Sub Category: {product.subCategory}</p>
-                                            <p>Stock: {product.stock}</p>
-                                            <p>Price: ${product.price}</p>
-                                            {product.imageUrls.map((imageUrl: string, index: number) => (
-                                                <div key={index}>
-                                                    <img src={imageUrl} style={{ width: '100px', height: '100px' }} alt={"product picture"}/>
-                                                </div>
-                                            ))}
-                                            <button onClick={() =>{
-                                                getProduct(product._id);
-                                                setEditProductModal(true);
-                                            }}> Edit Product </button>
-                                            <button onClick={() =>{
-                                                updateCurrProduct("id", product._id);
-                                                updateCurrProduct("name", product.name);
-                                                setConfirmModal(true);
-                                            }}> Remove Product </button>
+                                        <div className="productContainer" key={product._id}>
+                                            <div className="productLeftContainer">
+                                                <h3>{product.name}</h3>
+                                                <p>Product Description: {product.description}</p>
+                                                <p>Category: {product.category}</p>
+                                                <p>Sub Category: {product.subCategory}</p>
+                                                <p>Stock: {product.stock}</p>
+                                                <p>Price: ${product.price}</p>
+                                            </div>
+
+                                            <div className="productRightContainer">
+                                                {product.imageUrls.map((imageUrl: string, index: number) => (
+                                                    <div key={index}>
+                                                        <img src={imageUrl} alt={"product picture"}/>
+                                                    </div>
+                                                ))}
+
+                                            </div>
+                                            <div className="btnContainer">
+                                                <button onClick={() =>{
+                                                    getProduct(product._id);
+                                                    setEditProductModal(true);
+                                                }}> Edit Product </button>
+                                                <button onClick={() =>{
+                                                    updateCurrProduct("id", product._id);
+                                                    updateCurrProduct("name", product.name);
+                                                    setConfirmModal(true);
+                                                }}> Remove Product </button>
+                                            </div>
                                         </div>
                                     ))
                                 ) : (
@@ -473,22 +499,27 @@ export const Account = () => {
                             </p>
 
                             <form className="vendorForm" onSubmit={(event) =>{createVendor(event)}}>
-                                <label>Store Name</label>
-                                <input
-                                    type="text"
-                                    value={vendorInfo.storeName}
-                                    placeholder="Your store name"
-                                    onChange={(e) => updateVendor("name", e.target.value)}
-                                    required={true}
-                                />
-                                <label>Store Description</label>
-                                <textarea
-                                    value={vendorInfo.storeDescription}
-                                    placeholder="Description about your company and what you sell"
-                                    onChange={(e) => updateVendor("description", e.target.value)}
-                                    required={true}
-                                />
-                                <button type="submit">Submit</button>
+                                <div className="inputContainer">
+                                    <label>Store Name</label>
+                                    <input
+                                        type="text"
+                                        value={vendorInfo.storeName}
+                                        placeholder="Your store name"
+                                        onChange={(e) => updateVendor("name", e.target.value)}
+                                        required={true}
+                                    />
+                                </div>
+                                <div className="inputContainer">
+                                    <label>Store Description</label>
+                                    <textarea
+                                        value={vendorInfo.storeDescription}
+                                        placeholder="Description about your company and what you sell"
+                                        onChange={(e) => updateVendor("description", e.target.value)}
+                                        required={true}
+                                    />
+                                </div>
+                                
+                                <button className="subbtn" type="submit">Submit</button>
                             </form>
                         </div>
                     );
@@ -565,64 +596,83 @@ export const Account = () => {
                 <div>
                     <h1> Add a new product </h1>
                     <form className="productForm" onSubmit={createProduct}>
-                        <label> Name: </label>
-                        <input
-                            type="text"
-                            value={newProduct.name}
-                            onChange={(e) => updateProduct("name", e.target.value)}
-                            required
-                        />
-                        <label> Description: </label>
-                        <textarea
-                            value={newProduct.description}
-                            onChange={(e) => updateProduct("description", e.target.value)}
-                            required
-                        />
-                        <label> Category: </label>
-                        <select
-                            value={newProduct.category}
-                            onChange={handleCategoryChange}
-                            required
-                        >
-                            <option value="">Select a category</option>
-                            {categories.map(([category]) => (
-                                <option key={category} value={category}>{category}</option>
-                            ))}
-                        </select>
-                        <label> Sub Category: </label>
-                        <select
-                            value={newProduct.subCategory}
-                            onChange={(e) => updateProduct("subCategory", e.target.value)}
-                            required
-                        >
-                            <option value="">Select a subcategory</option>
-                            {subCategories.map((subCategory) => (
-                                <option key={subCategory} value={subCategory}>{subCategory}</option>
-                            ))}
-                        </select>
-                        <label> Stock: </label>
-                        <input
-                            type="number"
-                            value={newProduct.stock}
-                            onChange={(e) => updateProduct("stock", Number(e.target.value))}
-                            required
-                        />
-                        <label> Price: </label>
-                        <input
-                            type="number"
-                            value={newProduct.price}
-                            onChange={(e) => updateProduct("price", Number(e.target.value))}
-                            required
-                        />
-                        <label> Images: </label>
-                        <p> You can have up to 10 images </p>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleFileChange}
-                            required
-                        />
+                        <div className="inputContainer">
+                            <label>Name:</label>
+                            <input
+                                type="text"
+                                placeholder="Enter your product name"
+                                value={newProduct.name}
+                                onChange={(e) => updateProduct("name", e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="inputContainer">
+                            <label>Description:</label>
+                            <textarea
+                                placeholder="Short description about your product"
+                                value={newProduct.description}
+                                onChange={(e) => updateProduct("description", e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="outerInputContainer">
+                            <div className="inputContainer">
+                                <label>Category:</label>
+                                <select
+                                    value={newProduct.category}
+                                    onChange={handleCategoryChange}
+                                    required
+                                >
+                                    <option value="">Select a category</option>
+                                    {categories.map(([category]) => (
+                                        <option key={category} value={category}>{category}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="inputContainer">
+                                <label>Sub Category:</label>
+                                <select
+                                    value={newProduct.subCategory}
+                                    onChange={(e) => updateProduct("subCategory", e.target.value)}
+                                    required
+                                >
+                                    <option value="">Select a subcategory</option>
+                                    {subCategories.map((subCategory) => (
+                                        <option key={subCategory} value={subCategory}>{subCategory}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="outerInputContainer">
+                            <div className="inputContainer">
+                                <label>Stock:</label>
+                                <input
+                                    type="number"
+                                    value={newProduct.stock}
+                                    onChange={(e) => updateProduct("stock", Number(e.target.value))}
+                                    required
+                                />
+                            </div>
+                            <div className="inputContainer">
+                                <label>Price:</label>
+                                <input
+                                    type="number"
+                                    value={newProduct.price}
+                                    onChange={(e) => updateProduct("price", Number(e.target.value))}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="inputContainer">
+                            <label>Images: You can have up to 10 images</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleFileChange}
+                                required
+                            />
+                        </div>
                         <div className="imagePreviews">
                             {imagePreviews.map((preview, index) => (
                                 <div key={index} style={{ position: 'relative', display: 'inline-block', margin: '5px' }}>
@@ -640,7 +690,7 @@ export const Account = () => {
                                 </div>
                             ))}
                         </div>
-                        <button type="submit"> Add Product </button>
+                        <button className="subbtn" type="submit"> Add Product </button>
                     </form>
                 </div>
             </Modal>
@@ -649,22 +699,28 @@ export const Account = () => {
                 <div>
                     <h1> Edit your Store </h1>
                     <form className="vendorForm" onSubmit={(event) =>{editVendorFunc(event)}}>
-                        <label>Store Name</label>
-                        <input
-                            type="text"
-                            value={vendorInfo.storeName}
-                            placeholder="Your store name"
-                            onChange={(e) => editVendor("storeName", e.target.value)}
-                            required={true}
-                        />
-                        <label>Store Description</label>
-                        <textarea
-                            value={vendorInfo.storeDescription}
-                            placeholder="Description about your company and what you sell"
-                            onChange={(e) => editVendor("storeDescription", e.target.value)}
-                            required={true}
-                        />
-                        <button type="submit">Submit</button>
+                        <div className="inputContainer">
+                            <label>Store Name</label>
+                            <input
+                                type="text"
+                                value={vendorInfo.storeName}
+                                placeholder="Your store name"
+                                onChange={(e) => editVendor("storeName", e.target.value)}
+                                required={true}
+                            />
+                            
+                        </div>
+                        <div className="inputContainer">
+                            <label>Store Description</label>
+                            <textarea
+                                value={vendorInfo.storeDescription}
+                                placeholder="Description about your company and what you sell"
+                                onChange={(e) => editVendor("storeDescription", e.target.value)}
+                                required={true}
+                            />
+                        </div>
+                        
+                        <button className="subbtn" type="submit">Submit</button>
                     </form>
                 </div>
             </Modal>
@@ -672,55 +728,72 @@ export const Account = () => {
             <Modal show={editProductModal} onClose={() =>{setEditProductModal(false)}}> 
                 <h1> Edit your Product </h1>
                 <form className="productForm" onSubmit={(event) =>{editProduct(event)}}>
-                    <label> Name: </label>
+                <div className="inputContainer">
+                    <label>Name:</label>
                     <input
                         type="text"
                         value={currProduct.name}
                         onChange={(e) => updateCurrProduct("name", e.target.value)}
                         required
                     />
-                    <label> Description: </label>
+                </div>
+                <div className="inputContainer">
+                    <label>Description:</label>
                     <textarea
                         value={currProduct.description}
                         onChange={(e) => updateCurrProduct("description", e.target.value)}
                         required
                     />
-                    <label> Category: </label>
-                    <select
-                        value={currProduct.category}
-                        onChange={handleCategoryChange}
-                        required
-                    >
-                        <option value="">Select a category</option>
-                        {categories.map(([category]) => (
-                            <option key={category} value={category}>{category}</option>
-                        ))}
-                    </select>
-                    <label> Sub Category: </label>
-                    <select
-                        value={currProduct.subCategory}
-                        onChange={(e) => updateCurrProduct("subCategory", e.target.value)}
-                        required
-                    >
-                        <option value="">Select a subcategory</option>
-                        {subCategories.map((subCategory) => (
-                            <option key={subCategory} value={subCategory}>{subCategory}</option>
-                        ))}
-                    </select>
-                    <label> Stock: </label>
-                    <input
-                        type="number"
-                        value={currProduct.stock}
-                        onChange={(e) => updateCurrProduct("stock", e.target.value)}
-                        required
-                    />
-                    <label> Price: </label>
-                    <input
-                        type="number"
-                        value={currProduct.price}
-                        onChange={(e) => updateCurrProduct("price", e.target.value)}
-                        required
-                    />
+                </div>
+                <div className="outerInputContainer">
+                    <div className="inputContainer">
+                        <label>Category:</label>
+                        <select
+                            value={currProduct.category}
+                            onChange={handleCategoryChange}
+                            required
+                        >
+                            <option value="">Select a category</option>
+                            {categories.map(([category]) => (
+                                <option key={category} value={category}>{category}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="inputContainer">
+                        <label>Sub Category:</label>
+                        <select
+                            value={currProduct.subCategory}
+                            onChange={(e) => updateCurrProduct("subCategory", e.target.value)}
+                            required
+                        >
+                            <option value="">Select a subcategory</option>
+                            {subCategories.map((subCategory) => (
+                                <option key={subCategory} value={subCategory}>{subCategory}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+                <div className="outerInputContainer">
+                    <div className="inputContainer">
+                        <label>Stock:</label>
+                        <input
+                            type="number"
+                            value={currProduct.stock}
+                            onChange={(e) => updateCurrProduct("stock", e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <div className="inputContainer">
+                        <label>Price:</label>
+                        <input
+                            type="number"
+                            value={currProduct.price}
+                            onChange={(e) => updateCurrProduct("price", e.target.value)}
+                            required
+                        />
+                    </div>
+                </div>
                     <label> Images: </label>
                     <p> You can add or remove images </p>
                     <input
@@ -759,15 +832,21 @@ export const Account = () => {
                             </div>
                         ))}
                     </div>
-                    <button type="submit"> Update Product </button>
+                    <button className="subbtn" type="submit"> Update Product </button>
                 </form>
             </Modal>
             
-            <Modal show={confirmModal} onClose={closeModal}>
-                <p> Are you sure you want to remove this product? </p>
-                <h1> {currProduct.name} </h1>
-                <button onClick={removeProduct}> Confirm </button> 
-                <button onClick={() =>{ setConfirmModal(false)}}> Cancel </button>
+            <Modal show={confirmModal} onClose={() => {setConfirmModal(false)}}>
+                <div className="confirmModalContainer">
+                    <p> Are you sure you want to remove this product? </p>
+                    <h1> {currProduct.name} </h1>
+                    <div className="btnContainer">
+                        <button className="removeBtn" onClick={removeProduct}> Confirm </button> 
+                        <button className="cancelBtn" onClick={() =>{ setConfirmModal(false)}}> Cancel </button>
+                    </div>
+                    
+                </div>
+                
             </Modal>
         </>
     );

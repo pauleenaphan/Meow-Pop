@@ -3,3 +3,48 @@
     padding: 0;
     font-family: 'Poppins', sans-serif;
 }
+
+/* !Form styling */
+input[type=text], input[type=number], textarea, select{
+    padding: 8px;
+    font-size: 15px;
+    border-radius: 5px;
+    border: 2px solid black;
+}
+
+textarea{
+    resize: none;
+    height: 17vh;
+}
+
+.inputContainer{
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+}
+
+.outerInputContainer{
+    display: flex;
+    gap: 30px;
+}
+
+.outerInputContainer .inputContainer{
+    width: 100%;
+}
+
+label{
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.subbtn{
+    padding: 5px 20px;
+    border-radius: 5px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.subbtn:hover{
+    color: white;
+    background-color: black;
+}

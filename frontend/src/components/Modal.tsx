@@ -7,8 +7,16 @@ const Modal = ({ show, onClose, children }: { show: boolean; onClose: () => void
         return null;
     }
 
+    // Function to handle clicks on the overlay
+    const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        // Check if the click was outside the modal content
+        if (event.target === event.currentTarget) {
+            onClose();
+        }
+    };
+
     return (
-        <div className="modal-overlay">
+        <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-content">
                 <button className="modal-close" onClick={onClose}>x</button>
                 {children}

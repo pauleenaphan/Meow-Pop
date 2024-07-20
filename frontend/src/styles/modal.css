@@ -13,21 +13,30 @@
 
 .modal-content {
     background: rgb(255, 255, 255);
-    padding: 20px;
+    padding: 50px;
     border-radius: 5px;
-    width: 80vh;
-    height: 80vh;
+    width: 60vh;
+    height: auto;
     max-width: 100%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: relative;
 }
 
+.modal-content h1{
+    text-align: center;
+    padding-bottom: 20px;
+}
+
 .modal-close {
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 30px;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 30px;
     cursor: pointer;
+}
+
+.modal-close:hover{
+    color: #04354f;
 }
