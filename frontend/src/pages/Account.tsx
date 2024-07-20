@@ -15,6 +15,34 @@ export const Account = () => {
     const userRole = localStorage.getItem("userRole");
     const [newProductModal, setNewProductModal] = useState<boolean>(false);
     const [editVendorModal, setEditVendorModal] = useState<boolean>(false);
+    const [editProductModal, setEditProductModal] = useState<boolean>(false);
+    const [currProduct, setCurrProduct] = useState<{
+        id: string,
+        name: string, 
+        description: string,
+        category: string,
+        subCategory: string,
+        stock: number,
+        price: number,
+        imageUrls: (string | File)[]
+    }>({
+        id: "",
+        name: "",
+        description: "",
+        category: "",
+        subCategory: "",
+        stock: 0,
+        price: 0,
+        imageUrls: []
+    })
+
+    const updateCurrProduct = (postField: keyof typeof currProduct, userInput: string) =>{
+        setCurrProduct(prevData => ({
+            ...prevData,
+            [postField]: userInput
+        }))
+    }
+
     const [currContent, setCurrContent] = useState<string>("profile");
     const [vendorInfo, setVendorInfo] = useState<{
         user: { _id: string; username: string; email: string };
@@ -93,27 +121,30 @@ export const Account = () => {
         const category = event.target.value;
         setSelectedCategory(category); //updates selected category with the chosen one
         updateProduct("category", category);
+        updateCurrProduct("category", category);
 
         const selectedCategory = categories.find(([cat]) => cat === category);
         setSubCategories(selectedCategory ? selectedCategory[1] : []);
     };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        console.log("COMSOLE DSJALdsadasdKD");
         if (event.target.files) {
-            console.log("COMSOLE DSJALKD");
-            const files = Array.from(event.target.files);
-            console.log('Selected files:', files); // Debugging line
+            const files = Array.from(event.target.files || []);
     
             // Update imageUrls state
             setNewProduct(prevProduct => ({
                 ...prevProduct,
                 imageUrls: [...prevProduct.imageUrls, ...files]
             }));
+
+            setCurrProduct(prevProduct => ({
+                ...prevProduct,
+                imageUrls: [...prevProduct.imageUrls, ...files]
+            }));
     
+
             // Generate previews for new files
             const newPreviews = files.map(file => URL.createObjectURL(file));
-            console.log('New previews:', newPreviews); // Debugging line
             
             // Update imagePreviews state
             setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
@@ -121,8 +152,15 @@ export const Account = () => {
             console.warn('No files selected.');
         }
     };
-    
 
+    const getImageUrl = (image: string | File): string => {
+        if (typeof image === "string") {
+            return image;
+        } else {
+            return URL.createObjectURL(image);
+        }
+    };
+    
     //removes current image when user is uploading their images 
     const removeImagePreview = (index: number) => {
         setImagePreviews(prevPreviews => {
@@ -193,8 +231,6 @@ export const Account = () => {
                 storeDescription: data.storeDescription,
                 products: data.products
             });
-
-            console.log("PRODUCTS", data.products[0].imageUrls);
         } catch (error) {
             console.error("Error getting specific vendor", error);
         }
@@ -223,6 +259,7 @@ export const Account = () => {
         }catch(error){
             console.error("Error editing vendor");
         }
+        setEditVendorModal(false);
     }
 
     const createProduct = async (event: React.FormEvent) => {
@@ -242,10 +279,6 @@ export const Account = () => {
             formData.append('images', file); // Ensure the field name matches
         });
 
-        formData.forEach((value, key) => {
-            console.log(`${key}:`, value);
-        });
-    
         try {
             const response = await fetch(`http://localhost:3001/product/createProduct/${vendorId}`, {
                 method: "POST",
@@ -263,6 +296,87 @@ export const Account = () => {
         }
         setNewProductModal(false);
         viewVendor();
+    };
+
+    const getProduct = async (productId: string) =>{
+        try{
+            const response = await fetch(`http://localhost:3001/product/getProduct/${productId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                mode: "cors"
+            })
+            if(!response.ok){
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+            setCurrProduct({
+                id: productId,
+                name: data.name,
+                description: data.description,
+                category: data.category,
+                subCategory: data.subCategory,
+                stock: data.stock,
+                price: data.price,
+                imageUrls: data.imageUrls
+            })
+
+            setSelectedCategory(data.category);
+        }catch(error){
+            console.error("Error getting product")
+        }
+    }
+
+    const editProduct = async (event: React.FormEvent) => {
+        event.preventDefault();
+        const { name, description, category, subCategory, stock, price, imageUrls } = currProduct;
+    
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('category', category);
+        formData.append('subCategory', subCategory);
+        formData.append('stock', stock.toString());
+        formData.append('price', price.toString());
+    
+        // Separate existing URLs and new files
+        const existingUrls = imageUrls.filter((image) => typeof image === 'string');
+        const newFiles = imageUrls.filter((image) => image instanceof File);
+    
+        // Add existing URLs to FormData
+        formData.append('existingUrls', JSON.stringify(existingUrls));
+    
+        // Append new image files to FormData
+        newFiles.forEach((file) => {
+            if (file instanceof File) {
+                formData.append('images', file);
+            } else {
+                console.error("Item in imageUrls is not a File object:", file);
+            }
+        });
+    
+        try {
+            const response = await fetch(`http://localhost:3001/product/editProduct/${currProduct.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: formData
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
+            }
+    
+            alert("Product has been edited");
+            viewVendor();
+            setEditProductModal(false);
+        } catch (error) {
+            console.error("Error editing product", error);
+        }
     };
     
     const renderContent = () => {
@@ -293,29 +407,30 @@ export const Account = () => {
                             <h2> Your Products </h2>
                             <button onClick={() => setNewProductModal(true)}> Add a new Product </button>
                             <div>
-                            {vendorInfo.products.length > 0 ? (
-                                vendorInfo.products.map(product => (
-                                    <div key={product._id} style={{ marginBottom: '20px' }}>
-                                        <h3>{product.name}</h3>
-                                        <p>{product.description}</p>
-                                        <p>Category: {product.category}</p>
-                                        <p>Sub Category: {product.subCategory}</p>
-                                        <p>Stock: {product.stock}</p>
-                                        <p>Price: ${product.price}</p>
-                                        {product.imageUrls && product.imageUrls.length > 0 ? (
-                                            product.imageUrls.map((imageUrl: string, index: number) => (
+                                {vendorInfo.products.length > 0 ? (
+                                    vendorInfo.products.map(product => (
+                                        <div key={product._id} style={{ marginBottom: '20px' }}>
+                                            <h3>{product.name}</h3>
+                                            <p>{product.description}</p>
+                                            <p>Category: {product.category}</p>
+                                            <p>Sub Category: {product.subCategory}</p>
+                                            <p>Stock: {product.stock}</p>
+                                            <p>Price: ${product.price}</p>
+                                            {product.imageUrls.map((imageUrl: string, index: number) => (
                                                 <div key={index}>
-                                                    <img src={imageUrl} style={{ width: '100px', height: '100px' }} alt={"product picture"} />
+                                                    <img src={imageUrl} style={{ width: '100px', height: '100px' }} alt={"product picture"}/>
                                                 </div>
-                                            ))
-                                        ) : (
-                                            <p>No images available</p>
-                                        )}
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No products found.</p>
-                            )}
+                                            ))}
+                                            <button onClick={() =>{
+                                                getProduct(product._id);
+                                                setEditProductModal(true);
+                                            }}> Edit Product </button>
+                                            <button> Remove Product </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No products found.</p>
+                                )}
                             </div>
                         </div>
                     );
@@ -386,6 +501,14 @@ export const Account = () => {
             imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
         };
     }, [imagePreviews]);
+
+    useEffect(() => {
+        //if currProduct.category has a value then find the subcategories for it
+        if (currProduct.category) {
+            const selectedCategory = categories.find(([cat]) => cat === currProduct.category);
+            setSubCategories(selectedCategory ? selectedCategory[1] : []);
+        }
+    }, [currProduct.category]);
 
     return (
         <>
@@ -497,27 +620,122 @@ export const Account = () => {
                 </div>
             </Modal>
 
-            <Modal show={editVendorModal} onClose={closeModal}>
+            <Modal show={editVendorModal} onClose={() =>{setEditVendorModal(false)}}>
                 <div>
-                <form className="vendorForm" onSubmit={(event) =>{editVendorFunc(event)}}>
-                    <label>Store Name</label>
+                    <h1> Edit your Store </h1>
+                    <form className="vendorForm" onSubmit={(event) =>{editVendorFunc(event)}}>
+                        <label>Store Name</label>
+                        <input
+                            type="text"
+                            value={vendorInfo.storeName}
+                            placeholder="Your store name"
+                            onChange={(e) => editVendor("storeName", e.target.value)}
+                            required={true}
+                        />
+                        <label>Store Description</label>
+                        <textarea
+                            value={vendorInfo.storeDescription}
+                            placeholder="Description about your company and what you sell"
+                            onChange={(e) => editVendor("storeDescription", e.target.value)}
+                            required={true}
+                        />
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </Modal>
+
+            <Modal show={editProductModal} onClose={() =>{setEditProductModal(false)}}> 
+                <h1> Edit your Product </h1>
+                <form className="productForm" onSubmit={(event) =>{editProduct(event)}}>
+                    <label> Name: </label>
                     <input
                         type="text"
-                        value={vendorInfo.storeName}
-                        placeholder="Your store name"
-                        onChange={(e) => editVendor("storeName", e.target.value)}
-                        required={true}
+                        value={currProduct.name}
+                        onChange={(e) => updateCurrProduct("name", e.target.value)}
+                        required
                     />
-                    <label>Store Description</label>
+                    <label> Description: </label>
                     <textarea
-                        value={vendorInfo.storeDescription}
-                        placeholder="Description about your company and what you sell"
-                        onChange={(e) => editVendor("storeDescription", e.target.value)}
-                        required={true}
+                        value={currProduct.description}
+                        onChange={(e) => updateCurrProduct("description", e.target.value)}
+                        required
                     />
-                    <button type="submit">Submit</button>
+                    <label> Category: </label>
+                    <select
+                        value={currProduct.category}
+                        onChange={handleCategoryChange}
+                        required
+                    >
+                        <option value="">Select a category</option>
+                        {categories.map(([category]) => (
+                            <option key={category} value={category}>{category}</option>
+                        ))}
+                    </select>
+                    <label> Sub Category: </label>
+                    <select
+                        value={currProduct.subCategory}
+                        onChange={(e) => updateCurrProduct("subCategory", e.target.value)}
+                        required
+                    >
+                        <option value="">Select a subcategory</option>
+                        {subCategories.map((subCategory) => (
+                            <option key={subCategory} value={subCategory}>{subCategory}</option>
+                        ))}
+                    </select>
+                    <label> Stock: </label>
+                    <input
+                        type="number"
+                        value={currProduct.stock}
+                        onChange={(e) => updateCurrProduct("stock", e.target.value)}
+                        required
+                    />
+                    <label> Price: </label>
+                    <input
+                        type="number"
+                        value={currProduct.price}
+                        onChange={(e) => updateCurrProduct("price", e.target.value)}
+                        required
+                    />
+                    <label> Images: </label>
+                    <p> You can add or remove images </p>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleFileChange}
+                    />
+                    <div className="imagePreviews">
+                        {currProduct.imageUrls.map((image, index) => (
+                            <div key={index} style={{ position: 'relative', display: 'inline-block', margin: '5px' }}>
+                                <img
+                                    src={getImageUrl(image)}
+                                    alt={`Product ${index}`}
+                                    style={{ width: '100px', height: '100px' }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setCurrProduct((prevProduct) => {
+                                            const updatedImages = prevProduct.imageUrls.filter((_, i) => i !== index);
+                                            return {
+                                                ...prevProduct,
+                                                imageUrls: updatedImages,
+                                            };
+                                        });
+                                    }}
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 0,
+                                    }}
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    <button type="submit"> Update Product </button>
                 </form>
-                </div>
             </Modal>
         </>
     );
