@@ -1,4 +1,6 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState, ChangeEvent, useEffect, useCallback, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
 import Modal from '../components/Modal';
@@ -10,20 +12,29 @@ export const Account = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const vendorId = localStorage.getItem("userRoleId");
+    const userRole = localStorage.getItem("userRole");
     const [newProductModal, setNewProductModal] = useState<boolean>(false);
+    const [editVendorModal, setEditVendorModal] = useState<boolean>(false);
     const [currContent, setCurrContent] = useState<string>("profile");
     const [vendorInfo, setVendorInfo] = useState<{
         user: { _id: string; username: string; email: string };
         storeName: string;
         storeDescription: string;
         products: { _id: string; name: number; description: string; category: string; 
-                subCategory: string; stock: number; price: string; imageUrl: string }[]; 
+                subCategory: string; stock: number; price: string; imageUrls: string[] }[]; 
     }>({
         user: { _id: "", username: "", email: "" },
         storeName: "",
         storeDescription: "",
         products: []
     });
+
+    const editVendor = (postField: keyof typeof vendorInfo, userInput: string) => {
+        setVendorInfo(prevData => ({
+            ...prevData,
+            [postField]: userInput
+        }));
+    };
 
     const [newVendor, setNewVendor] = useState<{ name: string; description: string }>({
         name: "",
@@ -182,10 +193,37 @@ export const Account = () => {
                 storeDescription: data.storeDescription,
                 products: data.products
             });
+
+            console.log("PRODUCTS", data.products[0].imageUrls);
         } catch (error) {
             console.error("Error getting specific vendor", error);
         }
     };
+
+    const editVendorFunc = async (event: React.FormEvent) =>{
+        event.preventDefault();
+        const { storeName, storeDescription } = vendorInfo;
+        try{
+            const response = await fetch(`http://localhost:3001/vendor/editVendor/${vendorId}`,{
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                mode: "cors",
+                body: JSON.stringify({ storeName, storeDescription })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
+            }
+            
+            alert("Vendor has been edited");
+            viewVendor();
+        }catch(error){
+            console.error("Error editing vendor");
+        }
+    }
 
     const createProduct = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -238,38 +276,46 @@ export const Account = () => {
                         <h2> Username: </h2>
                         <p> {vendorInfo.user.username} </p>
                         <h2> Current Role: </h2>
-                        <p> {localStorage.getItem("userRole")} </p>
+                        <p> {userRole} </p>
                         <h2> VendorId: </h2>
                         <p> {vendorId} </p>
                     </div>
                 );
             case "vendor":
-                if (localStorage.getItem("userRole") === "vendor") {
+                if (userRole === "vendor") {
                     return (
                         <div>
                             <h1> Vendor </h1>
                             <h2> {vendorInfo.storeName} </h2>
+                            <button onClick={() =>{ setEditVendorModal(true)}}> Edit your store </button>
                             <p> {vendorInfo.storeDescription} </p>
                             <br></br>
                             <h2> Your Products </h2>
                             <button onClick={() => setNewProductModal(true)}> Add a new Product </button>
                             <div>
-                                {vendorInfo.products.length > 0 ? (
-                                    vendorInfo.products.map(product => (
-                                        <div key={product._id} style={{ marginBottom: '20px' }}>
-                                            <h3>{product.name}</h3>
-                                            <p>{product.description}</p>
-                                            <p>Category: {product.category}</p>
-                                            <p>Sub Category: {product.subCategory}</p>
-                                            <p>Stock: {product.stock}</p>
-                                            <p>Price: ${product.price}</p>
-                                            <img src={product.imageUrl} style={{ width: '100px', height: '100px' }} />
-                                            <h1> link: {product.imageUrl} </h1>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No products available.</p>
-                                )}
+                            {vendorInfo.products.length > 0 ? (
+                                vendorInfo.products.map(product => (
+                                    <div key={product._id} style={{ marginBottom: '20px' }}>
+                                        <h3>{product.name}</h3>
+                                        <p>{product.description}</p>
+                                        <p>Category: {product.category}</p>
+                                        <p>Sub Category: {product.subCategory}</p>
+                                        <p>Stock: {product.stock}</p>
+                                        <p>Price: ${product.price}</p>
+                                        {product.imageUrls && product.imageUrls.length > 0 ? (
+                                            product.imageUrls.map((imageUrl: string, index: number) => (
+                                                <div key={index}>
+                                                    <img src={imageUrl} style={{ width: '100px', height: '100px' }} alt={"product picture"} />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>No images available</p>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No products found.</p>
+                            )}
                             </div>
                         </div>
                     );
@@ -286,16 +332,18 @@ export const Account = () => {
                                 After that please fill out this form below!
                             </p>
 
-                            <form className="vendorForm" onSubmit={createVendor}>
+                            <form className="vendorForm" onSubmit={(event) =>{createVendor(event)}}>
                                 <label>Store Name</label>
                                 <input
                                     type="text"
+                                    value={vendorInfo.storeName}
                                     placeholder="Your store name"
                                     onChange={(e) => updateVendor("name", e.target.value)}
                                     required={true}
                                 />
                                 <label>Store Description</label>
                                 <textarea
+                                    value={vendorInfo.storeDescription}
                                     placeholder="Description about your company and what you sell"
                                     onChange={(e) => updateVendor("description", e.target.value)}
                                     required={true}
@@ -330,7 +378,7 @@ export const Account = () => {
     const closeModal = () => setNewProductModal(false);
 
     useEffect(() => {
-        if (localStorage.getItem("userRole") === "vendor") {
+        if (userRole === "vendor") {
             viewVendor();
         }
         return () => {
@@ -446,6 +494,29 @@ export const Account = () => {
                         </div>
                         <button type="submit"> Add Product </button>
                     </form>
+                </div>
+            </Modal>
+
+            <Modal show={editVendorModal} onClose={closeModal}>
+                <div>
+                <form className="vendorForm" onSubmit={(event) =>{editVendorFunc(event)}}>
+                    <label>Store Name</label>
+                    <input
+                        type="text"
+                        value={vendorInfo.storeName}
+                        placeholder="Your store name"
+                        onChange={(e) => editVendor("storeName", e.target.value)}
+                        required={true}
+                    />
+                    <label>Store Description</label>
+                    <textarea
+                        value={vendorInfo.storeDescription}
+                        placeholder="Description about your company and what you sell"
+                        onChange={(e) => editVendor("storeDescription", e.target.value)}
+                        required={true}
+                    />
+                    <button type="submit">Submit</button>
+                </form>
                 </div>
             </Modal>
         </>
