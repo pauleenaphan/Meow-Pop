@@ -71,13 +71,30 @@ exports.getProduct = async (req, res) => {
 }
 
 exports.getAllProducts = async (req, res) => {
-    try{
-        const products = await Product.find().populate("vendor").exec();
+    try {
+        //get category and subCategory from query parameters
+        const { category, subCategory } = req.query;
+
+        //build query object
+        let query = {};
+        if(category){
+            //add category filter if provided
+            const categories = Array.isArray(category) ? category : [category];
+            query.category = { $in: categories };
+        }
+        if(subCategory){
+            //add subCategory filter if provided
+            const subCategories = Array.isArray(subCategory) ? subCategory : [subCategory];
+            query.subCategory = { $in: subCategories };
+        }
+
+        // Find products based on the query
+        const products = await Product.find(query).populate("vendor").exec();
 
         res.status(200).json(products);
-    }catch(error){
+    } catch (error) {
         console.error("Error getting all products", error);
-        res.status(500).send("Error getting all products ")
+        res.status(500).send("Error getting all products");
     }
 }
 
