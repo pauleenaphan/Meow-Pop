@@ -71,6 +71,7 @@ nav ul{
     color: black;
     position: relative; 
     display: inline-block;
+    cursor: pointer;
 }
 
 .categories::after {

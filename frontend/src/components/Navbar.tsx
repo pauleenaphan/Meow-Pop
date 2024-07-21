@@ -33,7 +33,7 @@ export const Navbar = () =>{
             <nav>
                 <ul>
                     <li>
-                        <a className="categories" href="/">APPAREL</a>
+                        <a className="categories" onClick={() =>{ navigate("/products/Clothing,Accessories")}}>APPAREL</a>
                         <ul className="dropdown">
                             <li><h1> Clothing </h1></li>
                                 <li><a> Hats </a></li>

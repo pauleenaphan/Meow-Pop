@@ -3,6 +3,7 @@ import Home from '../src/pages/Home';
 import { Login } from '../src/pages/Login.tsx';
 import { Signup } from '../src/pages/Signup.tsx';
 import { Account } from '../src/pages/Account.tsx';
+import { Products } from "../src/pages/Products.tsx";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/products/:categories" element={<Products />}/>
       </Routes>
     </Router>
   );
