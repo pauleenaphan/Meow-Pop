@@ -14,19 +14,19 @@ const productSchema = new Schema({
         required: true, 
         enum: [
             // Clothes
-            "Costumes", "Hats", "Socks",
+            "Costumes", "Hats",
             // Toys
             "String Toys", "Balls", "Interactive Toys", "Catnip Toys", "Plush Toys", "Laser Pointers",
             // Accessories
-            "Collars", "Harnesses & Leashes", "Bow Ties", "Carriers",
+            "Collars", "Harnesses", "Bow Ties", "Carriers",
             // Furniture
             "Beds", "Trees", "Scratching Posts", "Window Perches",
             // Food
-            "Dry Food", "Wet Food", "Grain-Free Food", "Dental Treats", "Catnip",
+            "Dry Food", "Wet Food", "Catnip", "Treats",
             // Health
             "Vitamins", "Supplements", "Flea Prevention", "Tick Prevention",
             // Grooming
-            "Brushes", "Combs", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners", "Dental Care",
+            "Brushes", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners", "Dental Care",
             // Litter
             "Litter Boxes", "Litter Mats", "Litter Scoops", "Odor Control",
         ]

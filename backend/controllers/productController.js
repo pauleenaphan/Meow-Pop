@@ -4,6 +4,24 @@ const Product = require('../models/product');
 
 const uploadToS3 = require('../middleware/s3Service');
 
+const categories = [
+    ["Clothes", ["Costumes", "Hats", "Socks"]],
+    ["Toys", ["String Toys", "Balls", "Catnip Toys", "Plush Toys", "Laser Pointers"]],
+    ["Accessories", ["Collars", "Leashes", "Harnesses", "Bow Ties", "Carriers"]],
+    ["Furniture", ["Beds", "Trees", "Scratching Posts", "Window Perches"]],
+    ["Food", ["Dry Food", "Wet Food", "Grain-Free Food", "Dental Treats", "Catnip"]],
+    ["Health", ["Vitamins", "Supplements", "Flea Prevention", "Tick Prevention"]],
+    ["Grooming", ["Brushes", "Combs", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners", "Dental Care"]],
+    ["Litter", ["Litter Boxes", "Litter Mats", "Litter Scoops", "Odor Control"]]
+];
+
+// Convert categories array into an object for quick lookup
+const categoryMap = categories.reduce((acc, [mainCategory, subCategories]) => {
+    acc[mainCategory] = { type: 'main', subCategories };
+    subCategories.forEach(sub => acc[sub] = { type: 'sub', mainCategory });
+    return acc;
+}, {});
+
 exports.createProduct = async (req, res) => {
     try {
         const user = req.user;
@@ -72,23 +90,43 @@ exports.getProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
     try {
-        //get category and subCategory from query parameters
-        const { category, subCategory } = req.query;
+        const { category } = req.query;
 
-        //build query object
         let query = {};
-        if(category){
-            //add category filter if provided
-            const categories = Array.isArray(category) ? category : [category];
-            query.category = { $in: categories };
-        }
-        if(subCategory){
-            //add subCategory filter if provided
-            const subCategories = Array.isArray(subCategory) ? subCategory : [subCategory];
-            query.subCategory = { $in: subCategories };
+
+        // Function to determine if a string is a category or subcategory
+        const determineCategoryType = (cat) => {
+            return categoryMap[cat] ? categoryMap[cat] : null;
+        };
+
+        if (category) {
+            const categoriesArray = Array.isArray(category) ? category : [category];
+            let mainCategories = new Set();
+            let subCategories = new Set();
+
+            categoriesArray.forEach(cat => {
+                const typeInfo = determineCategoryType(cat);
+                if (typeInfo) {
+                    if (typeInfo.type === 'main') {
+                        mainCategories.add(cat);
+                    } else if (typeInfo.type === 'sub') {
+                        subCategories.add(cat);
+                        if (typeInfo.mainCategory) {
+                            mainCategories.add(typeInfo.mainCategory);
+                        }
+                    }
+                }
+            });
+
+            // Add main categories and subcategories to the query
+            if (mainCategories.size > 0) {
+                query.category = { $in: Array.from(mainCategories) };
+            }
+            if (subCategories.size > 0) {
+                query.subCategory = { $in: Array.from(subCategories) };
+            }
         }
 
-        console.log("QERUER", query.category);
         // Find products based on the query
         const products = await Product.find(query).populate("vendor").exec();
 
@@ -97,7 +135,7 @@ exports.getAllProducts = async (req, res) => {
         console.error("Error getting all products", error);
         res.status(500).send("Error getting all products");
     }
-}
+};
 
 exports.editProduct = async (req, res) => {
     try {
