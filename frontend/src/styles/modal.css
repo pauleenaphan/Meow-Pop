@@ -13,9 +13,9 @@
 
 .modal-content {
     background: rgb(255, 255, 255);
-    padding: 50px;
+    padding: 40px;
     border-radius: 5px;
-    width: 60vh;
+    width: 80vh;
     height: auto;
     max-width: 100%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -33,10 +33,6 @@
     right: 30px;
     background: none;
     border: none;
-    font-size: 30px;
+    font-size: 1.5rem;
     cursor: pointer;
-}
-
-.modal-close:hover{
-    color: #04354f;
 }
