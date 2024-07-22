@@ -18,7 +18,7 @@ const productSchema = new Schema({
             // Toys
             "String Toys", "Balls", "Interactive Toys", "Catnip Toys", "Plush Toys", "Laser Pointers",
             // Accessories
-            "Collars", "Leashes", "Harnesses", "Bow Ties", "Carriers",
+            "Collars", "Harnesses & Leashes", "Bow Ties", "Carriers",
             // Furniture
             "Beds", "Trees", "Scratching Posts", "Window Perches",
             // Food
