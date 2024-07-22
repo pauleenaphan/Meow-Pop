@@ -1,13 +1,57 @@
-// import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Modal from './Modal';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import "../styles/nav.css";
 
+interface CartItem {
+    product: {
+        _id: string;
+        name: string;
+        category: string;
+        price: number;
+        stock: number;
+        imageUrls: string[];
+    };
+    quantity: number;
+}
+
 export const Navbar = () =>{
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
     const isLoggedIn = localStorage.getItem('isLogged') === 'true';
+    const [showCartModal, setShowCartModal] = useState<boolean>(false);
+    const [confirmModal, setConfirmModal] = useState<{
+        status: boolean,
+        productId: string,
+        productName: string,
+    }>({
+        status: false,
+        productId: "",
+        productName: "",
+    });
+
+    const updateConfirmValues = (postField: keyof typeof confirmModal, userInput: string | boolean) =>{
+        setConfirmModal(prevData => ({
+            ...prevData,
+            [postField]: userInput
+        }))
+    }
+
+    const [cartItems, setCartItems] = useState<CartItem[]>([{
+        product: {
+            _id: "",
+            name: "",
+            category: "",
+            price: 0,
+            stock: 0,
+            imageUrls: []
+        },
+        quantity: 0
+    }]);
+
 
     const handleUserIconClick = () => {
         if (isLoggedIn) {
@@ -16,6 +60,44 @@ export const Navbar = () =>{
             navigate("/login");
         }
     };
+
+    const getCart = async () =>{
+        try{
+            const response = await fetch(`http://localhost:3001/cart/viewCart`, {
+                method: "GET",
+                headers:{
+                    "Authorization": `Bearer ${token}`
+                },
+                mode: "cors"
+            })
+
+            const data = await response.json();
+            setCartItems(data.items);
+            console.log("data", data);
+        }catch(error){
+            console.error("Error getting user cart");
+        }
+    }
+
+    const removeCartItem = async () =>{
+        try{
+            const response = await fetch(`http://localhost:3001/cart/removeItem/${confirmModal.productId}`, {
+                method: "DELETE",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                mode: "cors"
+            })
+            if(response.ok){
+                alert("item was delete");
+                getCart();
+                updateConfirmValues("status", false);
+            }
+        }catch(error){
+            console.error("Error removing item from cart");
+        }
+    }
 
     return(
         <header> 
@@ -26,7 +108,10 @@ export const Navbar = () =>{
                 </div>
                 <div className="icons">
                     <FontAwesomeIcon icon={faMagnifyingGlass}/>
-                    <FontAwesomeIcon icon={faCartShopping}/>
+                    <FontAwesomeIcon icon={faCartShopping} onClick={() =>{
+                                                                getCart();
+                                                                setShowCartModal(true)
+                                                            }}/>
                     <FontAwesomeIcon icon={faUser} onClick={handleUserIconClick} />
                 </div>
             </section>
@@ -107,6 +192,55 @@ export const Navbar = () =>{
                     </li>
                 </ul>
             </nav>
+
+            <Modal 
+                className="cartModal" 
+                contentClassName="cartModalContainer" 
+                show={showCartModal} 
+                onClose={() =>{ setShowCartModal(false)}}
+                >
+                <h1> Your Cart </h1>
+                <div className="cartItemOuterContainer">
+                    {cartItems.length > 0 ? (
+                        cartItems.map((item, index) => (
+                            <div key={index} className="cartItemContainer">
+                                <img src={item.product.imageUrls[0]} alt="img product"/>
+                                <div className="cartProductInfo">
+                                    <div>
+                                        <div className="cartContainer1">
+                                            <p>{item.product.name}</p>
+                                            <button className="rmvItemBtn" onClick={() =>{setConfirmModal({
+                                                status: true,
+                                                productId: item.product._id,
+                                                productName: item.product.name
+                                            })}}> x </button>
+                                        </div>
+                                        <p className="cartProductCategory">{item.product.category} </p>
+                                    </div>
+                                    
+                                    <div className="cartContainer1">
+                                        <p>In your cart: x{item.quantity}</p>
+                                        <p>${item.product.price}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p> There are urrently no items in your cart. Start shopping today! </p>
+                    )}
+                </div>
+            </Modal>
+
+            <Modal show={confirmModal.status} onClose={() => {updateConfirmValues("status", false)}}>
+                <div className="confirmModalContainer">
+                    <p> Are you sure you want to remove this product from your cart? </p>
+                    <h1> {confirmModal.productName} </h1>
+                    <div className="btnContainer">
+                        <button className="removeBtn" onClick={() =>{removeCartItem()}}> Confirm </button> 
+                        <button className="cancelBtn" onClick={() =>{updateConfirmValues("status", false)}}> Cancel </button>
+                    </div>
+                </div>
+            </Modal>
         </header>
     )
 }
