@@ -45,7 +45,7 @@ exports.addItem = async (req, res) => {
 
 exports.viewCart = async (req, res) => {
     try {
-        const userId = req.user.id; // Assuming `req.user` contains the logged-in user's info
+        const userId = req.user.id;
 
         // Find the cart for the current user
         const cart = await Cart.findOne({ user: userId }).populate('items.product').exec();
