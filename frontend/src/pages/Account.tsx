@@ -16,7 +16,7 @@ export const Account = () => {
     const [newProductModal, setNewProductModal] = useState<boolean>(false);
     const [editVendorModal, setEditVendorModal] = useState<boolean>(false);
     const [editProductModal, setEditProductModal] = useState<boolean>(false);
-    const [confirmModal, setConfirmModal] = useState<boolean>(false)
+    const [confirmModal, setConfirmModal] = useState<boolean>(false);
     const [currProduct, setCurrProduct] = useState<{
         id: string,
         name: string, 
@@ -397,6 +397,7 @@ export const Account = () => {
             const response = await fetch(`http://localhost:3001/product/deleteProduct/${currProduct.id}/${vendorId}`, {
                 method: "DELETE",
                 headers: {
+                    "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
                 mode: "cors"
@@ -856,9 +857,7 @@ export const Account = () => {
                         <button className="removeBtn" onClick={removeProduct}> Confirm </button> 
                         <button className="cancelBtn" onClick={() =>{ setConfirmModal(false)}}> Cancel </button>
                     </div>
-                    
                 </div>
-                
             </Modal>
         </>
     );
