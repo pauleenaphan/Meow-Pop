@@ -33,7 +33,7 @@ export const Navbar = () =>{
             <nav>
                 <ul>
                     <li>
-                        <a className="categories" onClick={() =>{ navigate("/products/Clothing,Accessories")}}>APPAREL</a>
+                        <a className="categories" onClick={() =>{ navigate("/products/Clothes,Accessories")}}>APPAREL</a>
                         <ul className="dropdown">
                             <li><h1> Clothing </h1></li>
                                 <li><a> Hats </a></li>
@@ -47,7 +47,7 @@ export const Navbar = () =>{
                         </ul>
                     </li>
                     <li>
-                        <a className="categories" href="/products">PET CARE</a>
+                        <a className="categories" onClick={() =>{ navigate("/products/Grooming,Health")}}>PET CARE</a>
                         <ul className="dropdown">
                             <li><h1> Grooming </h1></li>
                                 <li><a> Combs & Brushes </a></li>
@@ -62,7 +62,7 @@ export const Navbar = () =>{
                         </ul>
                     </li>
                     <li>
-                        <a className="categories" href="/about">TOYS</a>
+                        <a className="categories" onClick={() =>{ navigate("/products/Toys")}}>TOYS</a>
                         <ul className="dropdown">
                             <li><h1> Interactive </h1></li>
                                 <li><a> String Toys </a></li>
@@ -73,7 +73,7 @@ export const Navbar = () =>{
                         </ul>
                     </li> 
                     <li>
-                        <a className="categories" href="/contact">FURNITURE</a>
+                        <a className="categories" onClick={() =>{ navigate("/products/Furniture")}}>FURNITURE</a>
                         <ul className="dropdown">
                             <li><h1> Sleeping </h1></li>
                                 <li><a> Beds </a></li>
@@ -84,7 +84,7 @@ export const Navbar = () =>{
                         </ul>
                     </li>
                     <li>
-                        <a className="categories" href="/contact">FOOD</a>
+                        <a className="categories" onClick={() =>{ navigate("/products/Food")}}>FOOD</a>
                         <ul className="dropdown">
                             <li><h1> Standard </h1></li>
                                 <li><a> Hard Food </a></li>
@@ -96,7 +96,7 @@ export const Navbar = () =>{
                         </ul>
                     </li>
                     <li>
-                        <a className="categories" href="/contact">LITTER</a>
+                        <a className="categories" onClick={() =>{ navigate("/products/Litter")}}>LITTER</a>
                         <ul className="dropdown">
                             <li><h1> Accessories </h1></li>
                                 <li><a> Litter Boxes </a></li>

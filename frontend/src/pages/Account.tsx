@@ -297,6 +297,18 @@ export const Account = () => {
         }
         setNewProductModal(false);
         viewVendor();
+
+        setNewProduct({
+            name: "",
+            description: "",
+            category: "",
+            subCategory: "",
+            stock: 0,
+            price: 0,
+            imageUrls: []
+        })
+
+        setImagePreviews([]);
     };
 
     const getProduct = async (productId: string) =>{
@@ -489,7 +501,7 @@ export const Account = () => {
                     return (
                         <div>
                             <h1> Vendor </h1>
-                            <p>
+                            <p className="notVendorPg">
                                 You are currently not a vendor.
                                 First send us an email at Meowpop@meowmail.com stating
                                 how your products will align with our vision and why
@@ -503,7 +515,7 @@ export const Account = () => {
                                     <label>Store Name</label>
                                     <input
                                         type="text"
-                                        value={vendorInfo.storeName}
+                                        // value={vendorInfo.storeName}
                                         placeholder="Your store name"
                                         onChange={(e) => updateVendor("name", e.target.value)}
                                         required={true}
@@ -512,7 +524,7 @@ export const Account = () => {
                                 <div className="inputContainer">
                                     <label>Store Description</label>
                                     <textarea
-                                        value={vendorInfo.storeDescription}
+                                        // value={vendorInfo.storeDescription}
                                         placeholder="Description about your company and what you sell"
                                         onChange={(e) => updateVendor("description", e.target.value)}
                                         required={true}
