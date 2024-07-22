@@ -88,6 +88,7 @@ exports.getAllProducts = async (req, res) => {
             query.subCategory = { $in: subCategories };
         }
 
+        console.log("QERUER", query.category);
         // Find products based on the query
         const products = await Product.find(query).populate("vendor").exec();
 
@@ -161,9 +162,6 @@ exports.editProduct = async (req, res) => {
         res.status(500).send("Error editing product");
     }
 };
-
-
-
 
 exports.deleteProduct = async (req, res) => {
     try {
