@@ -4,6 +4,9 @@ const Product = require('../models/product');
 const Cart = require("../models/cart");
 
 exports.addItem = async (req, res) => {
+
+    //todo: add a check to see if the user is adding more than the stock amount
+    //currently if i added 5 then added 2, it does not add on
     try {
         const user = req.user;
 
@@ -12,7 +15,8 @@ exports.addItem = async (req, res) => {
             return res.status(403).send("You must be logged in");
         }
 
-        const { productId, quantity } = req.body;
+        const { quantity } = req.body;
+        const productId = req.params.id;
 
         //find the user's cart
         console.log("USER'S CART", user.id);
