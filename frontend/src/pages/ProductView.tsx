@@ -10,6 +10,7 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 export const ProductView = () =>{
+    const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const { productId } = useParams();
     const [currProduct, setCurrProduct] = useState<{
@@ -106,7 +107,8 @@ export const ProductView = () =>{
             <Navbar/>
             <div className="backBtnContainer">
                 <FontAwesomeIcon icon={faArrowLeft} />
-                <button className="backBtn"> Back to previous Page </button>
+                {/* -1 allows you to navigate to the page before */}
+                <button className="backBtn" onClick={() =>{ navigate(-1)}}> Back to previous Page </button>
             </div>
             <div className="viewProductContainer">
                 <div className="productCarousel">
