@@ -53,12 +53,14 @@ exports.login = async (req, res) => {
             email: user.email, 
             username: user.username, 
             role: user.role, 
-            roleId: user.roleId };
+            roleId: user.roleId,
+            cartId: user.cart
+        };
 
         //token is used for authenticating and authorizing users when they make requests
         //IMPLEMENT TOKEN REFRESHHH!
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10h' });
-        res.json({ token, role: user.role, roleId: user.roleId });
+        res.json({ token, role: user.role, roleId: user.roleId, cartId: user.cart });
     } catch (error) {
         res.status(500).send('Server error');
     }
