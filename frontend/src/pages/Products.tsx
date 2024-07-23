@@ -16,13 +16,13 @@ export const Products = () =>{
     const isDivisibleByFour = products.products.length % 4 === 0; //checks so that we can fix spacing
 
     const [categories] = useState<[string, string[]][]>([
-        ["Clothes", ["Costumes", "Hats", "Socks"]],
+        ["Clothes", ["Costumes", "Hats"]],
         ["Toys", ["String Toys", "Balls", "Catnip Toys", "Plush Toys", "Laser Pointers"]],
-        ["Accessories", ["Collars", "Leashes", "Harnesses", "Bow Ties", "Carriers"]],
+        ["Accessories", ["Collars", "Harnesses", "Bow Ties", "Carriers"]],
         ["Furniture", ["Beds", "Trees", "Scratching Posts", "Window Perches"]],
-        ["Food", ["Dry Food", "Wet Food", "Grain-Free Food", "Dental Treats", "Catnip"]],
+        ["Food", ["Dry Food", "Wet Food", "Catnip", "Treats"]],
         ["Health", ["Vitamins", "Supplements", "Flea Prevention", "Tick Prevention"]],
-        ["Grooming", ["Brushes", "Combs", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners", "Dental Care"]],
+        ["Grooming", ["Brushes", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners", "Dental Care"]],
         ["Litter", ["Litter Boxes", "Litter Mats", "Litter Scoops", "Odor Control"]]
     ]);
 
