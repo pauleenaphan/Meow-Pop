@@ -108,7 +108,7 @@ export const ProductView = () =>{
             <div className="backBtnContainer">
                 <FontAwesomeIcon icon={faArrowLeft} />
                 {/* -1 allows you to navigate to the page before */}
-                <button className="backBtn" onClick={() =>{ navigate(-1)}}> Back to previous Page </button>
+                <button className="backBtn" onClick={() =>{ navigate(-1)}}> Back to previous page </button>
             </div>
             <div className="viewProductContainer">
                 <div className="productCarousel">
