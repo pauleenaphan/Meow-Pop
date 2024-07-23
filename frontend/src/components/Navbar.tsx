@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 
@@ -23,6 +23,7 @@ export const Navbar = () =>{
     const token = localStorage.getItem("token");
     const isLoggedIn = localStorage.getItem('isLogged') === 'true';
     const [showCartModal, setShowCartModal] = useState<boolean>(false);
+    const [totalPrice, setTotalPrice] = useState<number>(0);
     const [confirmModal, setConfirmModal] = useState<{
         status: boolean,
         productId: string,
@@ -73,7 +74,9 @@ export const Navbar = () =>{
 
             const data = await response.json();
             setCartItems(data.items);
-            console.log("data", data);
+            console.log("data", data.items);
+            console.log("data", data.user);
+            console.log("cart ID", data._id);
         }catch(error){
             console.error("Error getting user cart");
         }
@@ -98,6 +101,24 @@ export const Navbar = () =>{
             console.error("Error removing item from cart");
         }
     }
+
+    //if cart modal is visible then disable the scroll for the outer page
+    useEffect(() => {
+        if (showCartModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [showCartModal]);
+
+    useEffect(() => {
+        const newTotalPrice = cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+        setTotalPrice(Number(newTotalPrice.toFixed(2)));
+    }, [cartItems]);
 
     return(
         <header> 
@@ -197,36 +218,48 @@ export const Navbar = () =>{
                 className="cartModal" 
                 contentClassName="cartModalContainer" 
                 show={showCartModal} 
-                onClose={() =>{ setShowCartModal(false)}}
-                >
-                <h1> Your Cart </h1>
+                onClose={() => { setShowCartModal(false); }}
+            >
+                <h1>Your Cart</h1>
                 <div className="cartItemOuterContainer">
                     {cartItems.length > 0 ? (
-                        cartItems.map((item, index) => (
-                            <div key={index} className="cartItemContainer">
-                                <img src={item.product.imageUrls[0]} alt="img product"/>
-                                <div className="cartProductInfo">
-                                    <div>
-                                        <div className="cartContainer1">
-                                            <p>{item.product.name}</p>
-                                            <button className="rmvItemBtn" onClick={() =>{setConfirmModal({
-                                                status: true,
-                                                productId: item.product._id,
-                                                productName: item.product.name
-                                            })}}> x </button>
+                        <>
+                            {cartItems.map((item, index) => (
+                                <div key={index} className="cartItemContainer">
+                                    <img src={item.product.imageUrls[0]} alt="Product" />
+                                    <div className="cartProductInfo">
+                                        <div>
+                                            <div className="cartContainer1">
+                                                <p>{item.product.name}</p>
+                                                <button 
+                                                    className="rmvItemBtn" 
+                                                    onClick={() => {
+                                                        setConfirmModal({
+                                                            status: true,
+                                                            productId: item.product._id,
+                                                            productName: item.product.name
+                                                        });
+                                                    }}
+                                                >
+                                                    x
+                                                </button>
+                                            </div>
+                                            <p className="cartProductCategory">{item.product.category}</p>
                                         </div>
-                                        <p className="cartProductCategory">{item.product.category} </p>
-                                    </div>
-                                    
-                                    <div className="cartContainer1">
-                                        <p>In your cart: x{item.quantity}</p>
-                                        <p>${item.product.price}</p>
+                                        <div className="cartContainer1">
+                                            <p>In your cart: x{item.quantity}</p>
+                                            <p>${item.product.price}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            ))}
+                            <p className="cartTotal"> Total: ${totalPrice} </p>
+                            <button className="checkoutBtn" onClick={() => { navigate(`/checkout/${totalPrice}`) }}>
+                                Proceed to Checkout
+                            </button>
+                        </>
                     ) : (
-                        <p> There are urrently no items in your cart. Start shopping today! </p>
+                        <p>There are currently no items in your cart. Start shopping today!</p>
                     )}
                 </div>
             </Modal>
