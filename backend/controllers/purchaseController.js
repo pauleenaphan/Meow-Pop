@@ -13,7 +13,7 @@ exports.buyItems = async (req, res) => {
         }
 
         const cartId = req.params.id;
-        const { paymentDetails, shippingAddress } = req.body;
+        const { paymentDetails, shippingAddress, totalAmount } = req.body;
 
         if (!paymentDetails || !shippingAddress) {
             return res.status(400).send("Payment details and shipping address are required");
@@ -37,7 +37,7 @@ exports.buyItems = async (req, res) => {
             })),
             paymentDetails,
             shippingAddress,
-            totalAmount: cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0)
+            totalAmount
         });
 
         const savedPurchase = await newPurchase.save();
