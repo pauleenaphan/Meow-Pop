@@ -11,8 +11,10 @@ const purchasedSchema = new Schema({
     }],
     totalAmount: { type: Number, required: true }, 
     paymentDetails: {
-        transactionId: { type: String, required: true }, 
-        paymentMethod: { type: String, required: true } 
+        cardName: { type: String, required: true },
+        cardNumber: { type: Number, required: true }, 
+        cardExpire: { type: Number, required: true },
+        cardCVV: { type: Number, required: true }
     },
     shippingAddress: {
         street: { type: String, required: true }, 
