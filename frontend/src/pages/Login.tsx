@@ -43,6 +43,7 @@ export const Login = () =>{
                 localStorage.setItem('userRole', data.role);
                 localStorage.setItem('userRoleId', data.roleId);
                 localStorage.setItem('isLogged', "true");
+                localStorage.setItem('cartId', data.cartId);
 
                 navigate("/");
             }else{
