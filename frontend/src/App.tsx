@@ -5,6 +5,7 @@ import { Signup } from '../src/pages/Signup.tsx';
 import { Account } from '../src/pages/Account.tsx';
 import { Products } from "../src/pages/Products.tsx";
 import { ProductView } from './pages/ProductView.tsx';
+import { Checkout } from './pages/Checkout.tsx';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route path="/account" element={<Account />} />
         <Route path="/products/:category" element={<Products />}/>
         <Route path="/productView/:productId" element={<ProductView/>}/>
-
+        <Route path="/checkout/:priceTotal" element={<Checkout/>}/>
       </Routes>
     </Router>
   );
