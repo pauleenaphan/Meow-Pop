@@ -161,7 +161,6 @@ export const Navbar = () =>{
                             <li><a onClick={() => { navigate("/products/Shampoos") }}>Shampoos</a></li>
                             <li><a onClick={() => { navigate("/products/Conditioners") }}>Conditioners</a></li>
                             <li><a onClick={() => { navigate("/products/Ear Cleaners") }}>Ear Cleaners</a></li>
-                            <li><a onClick={() => { navigate("/products/Dental Care") }}>Dental Care</a></li>
                             <li><h1 onClick={() => { navigate("/products/Health") }}>Health</h1></li>
                             <li><a onClick={() => { navigate("/products/Vitamins") }}>Vitamins</a></li>
                             <li><a onClick={() => { navigate("/products/Supplements") }}>Supplements</a></li>
@@ -174,9 +173,9 @@ export const Navbar = () =>{
                             <li><h1 onClick={() => { navigate("/products/Toys") }}>Interactive</h1></li>
                             <li><a onClick={() => { navigate("/products/String Toys") }}>String Toys</a></li>
                             <li><a onClick={() => { navigate("/products/Balls") }}>Balls</a></li>
-                            <li><a onClick={() => { navigate("/products/Laser Pointers") }}>Laser Pointers</a></li>
                             <li><a onClick={() => { navigate("/products/Catnip Toys") }}>Catnip Toys</a></li>
                             <li><a onClick={() => { navigate("/products/Plush Toys") }}>Plush Toys</a></li>
+                            <li><a onClick={() => { navigate("/products/Laser Pointers") }}>Laser Pointers</a></li>
                         </ul>
                     </li>
                     <li>

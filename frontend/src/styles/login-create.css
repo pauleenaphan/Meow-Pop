@@ -6,6 +6,10 @@
     justify-content: center;
 }
 
+.statusmsg{
+    text-align: center;
+}
+
 .loginPage .header, .signupForm .header{
     color: #275f70;
     font-size: 40px;

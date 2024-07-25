@@ -65,6 +65,7 @@ export const Signup = () =>{
                 <img src={ catShopping2 } alt="catShopping"/>
                 <form className="signupForm" onSubmit={handleSubmit}>
                     <h1 className="header"> Signup </h1>
+                    <p className="statusmsg"> {signupStatus} </p>
                     <div className="inputContainer">
                         <label> Email: </label>
                         <input 
@@ -102,7 +103,6 @@ export const Signup = () =>{
                         ></input>
                     </div>
                     <button className="subSignup" type="submit"> Signup </button>
-                    <p className="statusmsg"> {signupStatus} </p>
                     <div className="captionContainer">
                         <p> Already have an account? </p>
                         <button className="loginBtn" onClick={() => navigate("/login")}> Login </button>
