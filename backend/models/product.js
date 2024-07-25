@@ -26,7 +26,7 @@ const productSchema = new Schema({
             // Health
             "Vitamins", "Supplements", "Flea Prevention", "Tick Prevention",
             // Grooming
-            "Brushes", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners", "Dental Care",
+            "Brushes", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners",
             // Litter
             "Litter Boxes", "Litter Mats", "Litter Scoops", "Odor Control",
         ]
