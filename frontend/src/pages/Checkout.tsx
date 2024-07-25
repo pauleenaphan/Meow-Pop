@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Header } from '../components/Header';
+import "../styles/checkout.css";
+import Modal from '../components/Modal';
+import catShopping3 from "../assets/catShopping3.png";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -38,6 +41,7 @@ export const Checkout = () =>{
     const { priceTotal } = useParams<{ priceTotal?: string }>(); // Make priceTotal optional
     const cartId = localStorage.getItem("cartId");
     const [finalTotal, setFinalTotal] = useState<number>(0);
+    const [checkoutModal, setCheckoutModal] = useState<boolean>(false);
     
     useEffect(() => {
         // Convert priceTotal to a number, fallback to 0 if undefined or not a valid number
@@ -131,7 +135,6 @@ export const Checkout = () =>{
         const { paymentDetails, shippingAddress } = purchase;
 
         try{
-
             const response = await fetch(`http://localhost:3001/purchase/buyItems/${cartId}`,{
                 method: "POST",
                 headers:{
@@ -145,7 +148,8 @@ export const Checkout = () =>{
             if(!response.ok){
                 throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
             }
-            alert("you have completed your purchase");
+            
+            setCheckoutModal(true);
             //navigate them to a confimration page or something
         }catch(error){
             console.error("Erroring buying items");
@@ -160,8 +164,8 @@ export const Checkout = () =>{
                 {/* -1 allows you to navigate to the page before */}
                 <button className="backBtn" onClick={() =>{ navigate(-1)}}> Back to previous page </button>
             </div>
-            <div> 
-                <form onSubmit={buyItems}>
+            <div className="checkoutContainer">
+                <form className="checkoutForm" onSubmit={buyItems}>
                     <h1>Shipping Address</h1>
                     <div className="inputContainer">
                         <label>Street</label>
@@ -172,41 +176,45 @@ export const Checkout = () =>{
                             onChange={(e) => updatePurchase('shippingAddress.street', e.target.value)}
                         />
                     </div>
-                    <div className="inputContainer">
-                        <label>City</label>
-                        <input
-                            type="text"
-                            placeholder="Enter your city"
-                            required
-                            onChange={(e) => updatePurchase('shippingAddress.city', e.target.value)}
-                        />
+                    <div className='innerContainer'>
+                        <div className="inputContainer">
+                            <label>City</label>
+                            <input
+                                type="text"
+                                placeholder="Enter your city"
+                                required
+                                onChange={(e) => updatePurchase('shippingAddress.city', e.target.value)}
+                            />
+                        </div>
+                        <div className="inputContainer">
+                            <label>State</label>
+                            <input
+                                type="text"
+                                placeholder="Enter your state"
+                                required
+                                onChange={(e) => updatePurchase('shippingAddress.state', e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div className="inputContainer">
-                        <label>State</label>
-                        <input
-                            type="text"
-                            placeholder="Enter your state"
-                            required
-                            onChange={(e) => updatePurchase('shippingAddress.state', e.target.value)}
-                        />
-                    </div>
-                    <div className="inputContainer">
-                        <label>Country</label>
-                        <input
-                            type="text"
-                            placeholder="Enter your country"
-                            required
-                            onChange={(e) => updatePurchase('shippingAddress.country', e.target.value)}
-                        />
-                    </div>
-                    <div className="inputContainer">
-                        <label>Postal Code</label>
-                        <input
-                            type="number"
-                            placeholder="01234"
-                            required
-                            onChange={(e) => updatePurchase('shippingAddress.postalCode', Number(e.target.value))}
-                        />
+                    <div className="innerContainer">
+                        <div className="inputContainer">
+                            <label>Country</label>
+                            <input
+                                type="text"
+                                placeholder="Enter your country"
+                                required
+                                onChange={(e) => updatePurchase('shippingAddress.country', e.target.value)}
+                            />
+                        </div>
+                        <div className="inputContainer">
+                            <label>Postal Code</label>
+                            <input
+                                type="number"
+                                placeholder="01234"
+                                required
+                                onChange={(e) => updatePurchase('shippingAddress.postalCode', Number(e.target.value))}
+                            />
+                        </div>
                     </div>
                     <h1>Payment Information</h1>
                     <div className="inputContainer">
@@ -223,55 +231,80 @@ export const Checkout = () =>{
                         <input
                             type="number"
                             placeholder="16 Digit Number"
+                            minLength={16}
                             maxLength={16}
                             required
                             onChange={(e) => updatePurchase('paymentDetails.cardNumber', Number(e.target.value))}
                         />
                     </div>
-                    <div className="inputContainer">
-                        <label>Expiration Date</label>
-                        <input
-                            type="text"
-                            placeholder="MMYY"
-                            required
-                            onChange={(e) => updatePurchase('paymentDetails.cardExpire', e.target.value)}
-                        />
-                    </div>
-                    <div className="inputContainer">
-                        <label>CVV</label>
-                        <input
-                            type="number"
-                            placeholder="000"
-                            required
-                            onChange={(e) => updatePurchase('paymentDetails.cardCVV', Number(e.target.value))}
-                        />
-                    </div>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
-            <div>
-                <h1> Order Summary </h1>
-                {cartItems.map((item, index) => (
-                    <div key={index} className="cartItemContainer">
-                        <img src={item.product.imageUrls[0]} alt="Product" />
-                        <div className="cartProductInfo">
-                            <div>
-                                <div className="cartContainer1">
-                                    <p>{item.product.name}</p>
-                                </div>
-                                <p className="cartProductCategory">{item.product.category}</p>
-                            </div>
-                            <div className="cartContainer1">
-                                <p>In your cart: x{item.quantity}</p>
-                                <p>${item.product.price}</p>
-                            </div>
+                    <div className="innerContainer">
+                        <div className="inputContainer">
+                            <label>Expiration Date</label>
+                            <input
+                                type="text"
+                                placeholder="MMYY"
+                                minLength={4}
+                                maxLength={4}
+                                required
+                                onChange={(e) => updatePurchase('paymentDetails.cardExpire', e.target.value)}
+                            />
+                        </div>
+                        <div className="inputContainer">
+                            <label>CVV</label>
+                            <input
+                                type="number"
+                                placeholder="000"
+                                minLength={3}
+                                maxLength={3}
+                                required
+                                onChange={(e) => updatePurchase('paymentDetails.cardCVV', Number(e.target.value))}
+                            />
                         </div>
                     </div>
-                ))}
-                <p> Subtotal: ${priceTotal} </p>
-                <p> Shipping Fees: $3 </p>
-                <p> Total: ${finalTotal} </p>
+                    <button type="submit" className="subbtn">Place Order</button>
+                </form>
+                
+                <div className="orderSummaryOuter">
+                    <h1> Order Summary </h1>
+                    <div className="orderSummaryOuter2">
+                        {cartItems.map((item, index) => (
+                            <div key={index} className="orderSummaryContainer">
+                                <img src={item.product.imageUrls[0]} alt="Product" />
+                                <div className="cartContainer0">
+                                    <div>
+                                        <div className="cartContainer1">
+                                            <p>{item.product.name}</p>
+                                        </div>
+                                        <p className="cartProductCategory">{item.product.category}</p>
+                                    </div>
+                                    <div className="cartContainer1">
+                                        <p>In your cart: x{item.quantity}</p>
+                                        <p>${item.product.price}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="cartPrice">
+                        <p> Subtotal: ${priceTotal} </p>
+                        <p> Shipping Fees: $3 </p>
+                        <p> Total: ${finalTotal} </p>
+                    </div>
+                </div>
             </div>
+
+            <Modal show={checkoutModal} onClose={() =>{ 
+                    setCheckoutModal(false);
+                    navigate("/");
+                    }}> 
+                <div className="checkoutModal">
+                    <h1> Thank you for shopping with Meowpop! </h1>
+                    <p> Check your purchase in your profile to confirm your order details.
+                        Have a pawtastic day!
+                    </p>
+                    <img src={catShopping3} alt="catShop"/>
+                </div>
+            </Modal>
         </div>
     )
 }

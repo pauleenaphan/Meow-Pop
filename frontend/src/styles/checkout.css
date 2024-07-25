@@ -1,0 +1,71 @@
+.checkoutContainer{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.checkoutForm{
+    width: 40%;
+    padding: 30px 0 50px 0;
+}
+
+.checkoutForm h1, .orderSummaryOuter h1{
+    padding: 10px 0;
+    color: #275f70;
+}
+
+.checkoutForm .inputContainer{
+    width: 100%;
+}
+
+.checkoutForm .innerContainer{
+    display: flex;
+    gap: 20px;
+}
+
+.orderSummaryOuter{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 80vh;
+    padding: 30px;
+}
+
+.orderSummaryOuter2{
+    border: 2px solid;
+    border-radius: 5px;
+    padding: 10px;
+    overflow: auto;
+}
+
+.orderSummaryContainer{
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+}
+
+.cartContainer0{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.orderSummaryContainer img{
+    width: 10vh;
+}
+
+.cartPrice{
+    text-align: right;
+    font-size: 18px;
+}
+
+/* !checkout modal */
+.checkoutModal{
+    text-align: center;
+    padding: 10px;
+}
+
+.checkoutModal img{
+    width: 50vh;
+}

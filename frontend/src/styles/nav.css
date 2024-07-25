@@ -124,7 +124,7 @@ nav ul li .dropdown {
     margin-left: -20px;
     position: absolute;
     background-color: #9DBEBB;
-    border: solid 2px;
+    border: solid 2px #7ca09d;
     width: fit-content;
     border-radius: 5px;
 }
