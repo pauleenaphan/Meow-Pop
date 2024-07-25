@@ -2,10 +2,11 @@
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
+
 }
 
 /* !Form styling */
-input[type=text], input[type=number], textarea, select{
+input[type=text], input[type=number], input[type=password], textarea, select{
     padding: 8px;
     font-size: 15px;
     border-radius: 5px;

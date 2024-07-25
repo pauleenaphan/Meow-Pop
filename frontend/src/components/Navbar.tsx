@@ -74,9 +74,6 @@ export const Navbar = () =>{
 
             const data = await response.json();
             setCartItems(data.items);
-            console.log("data", data.items);
-            console.log("data", data.user);
-            console.log("cart ID", data._id);
         }catch(error){
             console.error("Error getting user cart");
         }
@@ -130,8 +127,12 @@ export const Navbar = () =>{
                 <div className="icons">
                     <FontAwesomeIcon icon={faMagnifyingGlass}/>
                     <FontAwesomeIcon icon={faCartShopping} onClick={() =>{
-                                                                getCart();
-                                                                setShowCartModal(true)
+                                                                if(isLoggedIn){
+                                                                    getCart();
+                                                                }
+                                                                setShowCartModal(true);
+                                                    
+                                                                
                                                             }}/>
                     <FontAwesomeIcon icon={faUser} onClick={handleUserIconClick} />
                 </div>
@@ -165,7 +166,6 @@ export const Navbar = () =>{
                             <li><a onClick={() => { navigate("/products/Vitamins") }}>Vitamins</a></li>
                             <li><a onClick={() => { navigate("/products/Supplements") }}>Supplements</a></li>
                             <li><a onClick={() => { navigate("/products/Flea Prevention") }}>Flea Prevention</a></li>
-                            <li><a onClick={() => { navigate("/products/Tick Prevention") }}>Tick Prevention</a></li>
                         </ul>
                     </li>
                     <li>
@@ -222,44 +222,48 @@ export const Navbar = () =>{
             >
                 <h1>Your Cart</h1>
                 <div className="cartItemOuterContainer">
-                    {cartItems.length > 0 ? (
-                        <>
-                            {cartItems.map((item, index) => (
-                                <div key={index} className="cartItemContainer">
-                                    <img src={item.product.imageUrls[0]} alt="Product" />
-                                    <div className="cartProductInfo">
-                                        <div>
-                                            <div className="cartContainer1">
-                                                <p>{item.product.name}</p>
-                                                <button 
-                                                    className="rmvItemBtn" 
-                                                    onClick={() => {
-                                                        setConfirmModal({
-                                                            status: true,
-                                                            productId: item.product._id,
-                                                            productName: item.product.name
-                                                        });
-                                                    }}
-                                                >
-                                                    x
-                                                </button>
+                    {!isLoggedIn ? (
+                        <p>Please log in to view your cart.</p>
+                    ) : (
+                        cartItems.length > 0 ? (
+                            <>
+                                {cartItems.map((item, index) => (
+                                    <div key={index} className="cartItemContainer">
+                                        <img src={item.product.imageUrls[0]} alt="Product" />
+                                        <div className="cartProductInfo">
+                                            <div>
+                                                <div className="cartContainer1">
+                                                    <p>{item.product.name}</p>
+                                                    <button 
+                                                        className="rmvItemBtn" 
+                                                        onClick={() => {
+                                                            setConfirmModal({
+                                                                status: true,
+                                                                productId: item.product._id,
+                                                                productName: item.product.name
+                                                            });
+                                                        }}
+                                                    >
+                                                        x
+                                                    </button>
+                                                </div>
+                                                <p className="cartProductCategory">{item.product.category}</p>
                                             </div>
-                                            <p className="cartProductCategory">{item.product.category}</p>
-                                        </div>
-                                        <div className="cartContainer1">
-                                            <p>In your cart: x{item.quantity}</p>
-                                            <p>${item.product.price}</p>
+                                            <div className="cartContainer1">
+                                                <p>In your cart: x{item.quantity}</p>
+                                                <p>${item.product.price}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                            <p className="cartTotal"> Total: ${totalPrice} </p>
-                            <button className="checkoutBtn" onClick={() => { navigate(`/checkout/${totalPrice}`) }}>
-                                Proceed to Checkout
-                            </button>
-                        </>
-                    ) : (
-                        <p>There are currently no items in your cart. Start shopping today!</p>
+                                ))}
+                                <p className="cartTotal"> Total: ${totalPrice} </p>
+                                <button className="checkoutBtn" onClick={() => { navigate(`/checkout/${totalPrice}`) }}>
+                                    Proceed to Checkout
+                                </button>
+                            </>
+                        ) : (
+                            <p>There are currently no items in your cart. Start shopping today!</p>
+                        )
                     )}
                 </div>
             </Modal>

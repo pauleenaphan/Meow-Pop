@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faPhone, faComment } from '@fortawesome/free-solid-svg-icons';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { useNavigate } from 'react-router-dom';
 
 import homepageCat1 from '../assets/homepageCat1.jpg';
 import homepageCat2 from "../assets/homepageCat2.jpg";
@@ -14,6 +15,8 @@ import "../styles/home.css";
 import { Navbar } from '../components/Navbar';
 
 const Home = () => {
+    const navigate = useNavigate();
+
     return (
         <div>
             <Navbar/>
@@ -60,7 +63,7 @@ const Home = () => {
                         </div>
                     </Carousel>
                     {/* Take you to all products page */}
-                    <button className="shopBtn"> Shop Now </button>
+                    <button className="shopBtn" onClick={() => { navigate("/products/Clothes,Accessories")}}> Shop Now </button>
                 </section>
                 <div className="sectionDivider"></div>
                 <section className="aboutUsContainer">

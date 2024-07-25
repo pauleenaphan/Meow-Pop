@@ -12,6 +12,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 export const ProductView = () =>{
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
+    const isLogged = localStorage.getItem("isLogged");
     const { productId } = useParams();
     const [currProduct, setCurrProduct] = useState<{
         name: string, 
@@ -78,6 +79,10 @@ export const ProductView = () =>{
     };
 
     const addToCart = async () =>{
+        if(isLogged == "false"){
+            alert("You need to login in order to add items to your cart");
+            return;
+        }
         try{
             const response = await fetch(`http://localhost:3001/cart/addItem/${productId}`,{
                 method: "POST",

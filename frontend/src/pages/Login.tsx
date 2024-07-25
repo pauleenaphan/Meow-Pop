@@ -1,6 +1,8 @@
 import React, { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
+import "../styles/login-create.css";
+import catShopping from "../assets/catShopping.jpg";
 
 type UserData = {
     email: string;
@@ -58,8 +60,10 @@ export const Login = () =>{
         <div>
             <Header/>
             <div className="loginPage">
-                <h1> Login </h1>
+                <img src={ catShopping } alt="cat shopping img"/>
                 <form className="loginForm" onSubmit={handleSubmit}>
+                    <h1 className="header"> Welcome Back! </h1>
+                    <p className="statusmsg"> {loginStatus} </p>
                     <div className="inputContainer">
                         <label> Email: </label>
                         <input 
@@ -78,13 +82,13 @@ export const Login = () =>{
                         ></input>
                     </div>
                     
-                    <button type="submit"> Login </button>
+                    <button className="subbtn" type="submit"> Login </button>
+                    
+                    <div className="captionContainer">
+                        <p> Don't have an account?</p>
+                        <button className="signupBtn" onClick={()=> navigate("/signup")}> Sign up </button>
+                    </div>
                 </form>
-                <p className="statusmsg"> {loginStatus} </p>
-                <div className="captionContainer">
-                    <p> Don't have an account?</p>
-                    <button onClick={()=> navigate("/signup")}> Sign up </button>
-                </div>
             </div>
         </div>
     )

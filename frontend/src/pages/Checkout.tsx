@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Header } from '../components/Header';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faMagnifyingGlassLocation } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 interface CartItem {
     product: {
@@ -123,9 +123,15 @@ export const Checkout = () =>{
 
     const buyItems = async (event: React.FormEvent) =>{
         event.preventDefault();
-        const { paymentDetails, shippingAddress, totalAmount } = purchase;
+        
+        //only gets last 4 digits of the credit card to store in the db
+        const cardNumber = purchase.paymentDetails.cardNumber.toString().slice(-4);
+        updatePurchase("paymentDetails.cardNumber", parseInt(cardNumber, 10));
+
+        const { paymentDetails, shippingAddress } = purchase;
 
         try{
+
             const response = await fetch(`http://localhost:3001/purchase/buyItems/${cartId}`,{
                 method: "POST",
                 headers:{
@@ -133,7 +139,7 @@ export const Checkout = () =>{
                     "Authorization": `Bearer ${token}`
                 },
                 mode: "cors",
-                body: JSON.stringify({ paymentDetails, shippingAddress, totalAmount })
+                body: JSON.stringify({ paymentDetails, shippingAddress, totalAmount: finalTotal })
             });
             
             if(!response.ok){
@@ -217,6 +223,7 @@ export const Checkout = () =>{
                         <input
                             type="number"
                             placeholder="16 Digit Number"
+                            maxLength={16}
                             required
                             onChange={(e) => updatePurchase('paymentDetails.cardNumber', Number(e.target.value))}
                         />
@@ -225,7 +232,7 @@ export const Checkout = () =>{
                         <label>Expiration Date</label>
                         <input
                             type="text"
-                            placeholder="MM/YY"
+                            placeholder="MMYY"
                             required
                             onChange={(e) => updatePurchase('paymentDetails.cardExpire', e.target.value)}
                         />

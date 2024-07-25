@@ -1,0 +1,74 @@
+/* !Login */
+.loginPage{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+}
+
+.loginPage .header, .signupForm .header{
+    color: #275f70;
+    font-size: 40px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.loginPage .inputContainer{
+    width: 50vh !important;
+}
+
+.loginPage img{
+    width: 60vh;
+}
+
+.loginForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.captionContainer{
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.signupBtn, .signupPage .loginBtn{
+    background-color: white;
+    border: none;
+    color: #275f70;
+    cursor: pointer;
+    font-size: 25px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.signupBtn:hover, .signupPage .loginBtn:hover{
+    color: #03273a;
+}
+
+/* !Account Creation */
+.signupPage{
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+}
+
+.subSignup{
+    background-color: white;
+    border-radius: 5px;
+    display: flex;
+    font-size: 17px;
+    margin: 0 auto;
+    margin-top: 10px;
+    padding: 5px 20px;
+}
+
+.subSignup:hover{
+    color: white;
+    background-color: black;
+    cursor: pointer;
+}

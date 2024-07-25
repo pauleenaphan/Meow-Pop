@@ -1,6 +1,7 @@
 import React, { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
+import catShopping2 from "../assets/catShopping2.jpg";
 
 type UserData = {
     email: string;
@@ -61,8 +62,9 @@ export const Signup = () =>{
         <div>
             <Header/>
             <div className="signupPage">
-                <h1> Signup </h1>
+                <img src={ catShopping2 } alt="catShopping"/>
                 <form className="signupForm" onSubmit={handleSubmit}>
+                    <h1 className="header"> Signup </h1>
                     <div className="inputContainer">
                         <label> Email: </label>
                         <input 
@@ -99,13 +101,13 @@ export const Signup = () =>{
                             required={true}
                         ></input>
                     </div>
-                    <button type="submit"> Signup </button>
+                    <button className="subSignup" type="submit"> Signup </button>
+                    <p className="statusmsg"> {signupStatus} </p>
+                    <div className="captionContainer">
+                        <p> Already have an account? </p>
+                        <button className="loginBtn" onClick={() => navigate("/login")}> Login </button>
+                    </div>
                 </form>
-                <p className="statusmsg"> {signupStatus} </p>
-                <div className="captionContainer">
-                    <p> Already have an account? </p>
-                    <button onClick={() => navigate("/login")}> Login </button>
-                </div>
             </div>
         </div>
     )

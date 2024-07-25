@@ -71,7 +71,7 @@
     background-color: #468189;
     color: white;
     border-radius: 5px;
-    padding: 0px 20px;
+    padding: 0px 10px;
 }
 
 .categorySideContainer{
@@ -85,7 +85,7 @@
 }
 
 .mainCategory{
-    font-size: 27px !important;
+    font-size: 26px !important;
     font-weight: 500;
 }
 

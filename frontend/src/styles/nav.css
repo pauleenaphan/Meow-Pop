@@ -1,5 +1,6 @@
 .subHeader{
     background-color: #468189;
+    background: linear-gradient(to bottom, #468189, #275f70);
     display: flex;
     align-items: center; 
     justify-content: space-between; 
@@ -50,11 +51,13 @@
 }
 
 /* nav */
-nav{
+nav {
     position: sticky;
     top: 0;
     z-index: 1000;
     background-color: #9DBEBB;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid #8C9A9E;
 }
 
 nav ul{
@@ -66,31 +69,39 @@ nav ul{
     font-size: 20px;
 }
 
-.categories{
+.categories {
     text-decoration: none;
-    color: black;
+    color: #252525; 
     position: relative; 
     display: inline-block;
     cursor: pointer;
+    font-weight: 500; 
+    font-size: 20px; 
+    padding-bottom: 5px; 
+    transition: color 0.3s ease; 
 }
 
 .categories::after {
-    content: ''; /* Empty content for the pseudo-element */
+    content: ''; 
     position: absolute;
     left: 0;
-    bottom: -5px; /* Space between text and underline */
+    bottom: 0; 
     width: 100%;
-    height: 2px; /* Thickness of the underline */
-    background-color: black; /* Color of the underline */
-    transform: scaleX(0); /* Initially hide the underline */
-    transform-origin: bottom right; /* Start the animation from the right */
-    transition: transform 0.3s ease; /* Smooth animation */
-    z-index: 1000;
+    height: 2px; 
+    background-color: #252525;; 
+    transform: scaleX(0); 
+    transform-origin: bottom left; 
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    z-index: 1; 
+}
+
+.categories:hover {
+    font-weight: bold;
 }
 
 .categories:hover::after {
-    transform: scaleX(1); /* Show the underline on hover */
-    transform-origin: bottom left; /* Animate from the left */
+    transform: scaleX(1); 
+    font-weight: bold;
 }
 
 /* !dropdown menu */
@@ -109,18 +120,20 @@ nav ul li {
 
 nav ul li .dropdown {
     display: none;
-    padding: 30px;
-    margin-left: -30px;
+    padding: 20px;
+    margin-left: -20px;
     position: absolute;
     background-color: #9DBEBB;
-    width: 350%;
+    border: solid 2px;
+    width: fit-content;
+    border-radius: 5px;
 }
 
 nav ul li:hover .dropdown {
     display: block; /* Show the dropdown on hover */
 }
 
-nav ul li .dropdown li a:hover {
+nav ul li .dropdown li a:hover, nav ul li .dropdown li h1:hover {
     color: #062c42;
     cursor: pointer;
     text-decoration: none !important;
@@ -212,6 +225,6 @@ nav ul li .dropdown li a:hover {
 }
 
 .cartTotal{
-    font-size: 25px;
+    font-size: 25x;
     text-align: right;
 }

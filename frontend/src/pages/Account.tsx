@@ -6,17 +6,34 @@ import { Header } from '../components/Header';
 import Modal from '../components/Modal';
 import "../styles/account.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faMoneyBill, faClockRotateLeft, faGear } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faMoneyBill, faClockRotateLeft, faGear, faArrowLeft  } from '@fortawesome/free-solid-svg-icons';
+
+
+const formatDate = (dateString: string) => {
+    // Convert the date string to a Date object
+    const date = new Date(dateString);
+
+    // Format the date as desired
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+};
 
 export const Account = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const vendorId = localStorage.getItem("userRoleId");
     const userRole = localStorage.getItem("userRole");
+    //!MODAL USESTATES
     const [newProductModal, setNewProductModal] = useState<boolean>(false);
     const [editVendorModal, setEditVendorModal] = useState<boolean>(false);
     const [editProductModal, setEditProductModal] = useState<boolean>(false);
     const [confirmModal, setConfirmModal] = useState<boolean>(false);
+
+    const [currContent, setCurrContent] = useState<string>("profile");
+
     const [currProduct, setCurrProduct] = useState<{
         id: string,
         name: string, 
@@ -44,7 +61,6 @@ export const Account = () => {
         }))
     }
 
-    const [currContent, setCurrContent] = useState<string>("profile");
     const [vendorInfo, setVendorInfo] = useState<{
         user: { _id: string; username: string; email: string };
         storeName: string;
@@ -83,7 +99,7 @@ export const Account = () => {
         ["Accessories", ["Collars", "Harnesses", "Bow Ties", "Carriers"]],
         ["Furniture", ["Beds", "Trees", "Scratching Posts", "Window Perches"]],
         ["Food", ["Dry Food", "Wet Food", "Catnip", "Treats"]],
-        ["Health", ["Vitamins", "Supplements", "Flea Prevention", "Tick Prevention"]],
+        ["Health", ["Vitamins", "Supplements", "Flea Prevention"]],
         ["Grooming", ["Brushes", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners", "Dental Care"]],
         ["Litter", ["Litter Boxes", "Litter Mats", "Litter Scoops", "Odor Control"]]
     ]);
@@ -115,7 +131,65 @@ export const Account = () => {
 
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [subCategories, setSubCategories] = useState<string[]>([]);
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]); // State for image previews
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+    //!PURCHASE USESTATES   
+    const [allPurchases, setAllPurchases] = useState<{
+        orderNumber: string,
+        purchaseDate: string
+    }[]>([])
+
+    const [specificPurchase, setSpecificPurchase] = useState<{
+        orderNumber: string;
+        purchaseDate: string;
+        items: {
+            productId: {
+                _id: string;
+                name: string;
+                description: string;
+                price: number;
+                imageUrls: string[];
+                category: string;
+                subCategory: string;
+                stock: number;
+                vendor: string;
+            };
+            quantity: number;
+            price: number;
+        }[];
+        totalAmount: number;
+        paymentDetails: {
+            cardName: string;
+            cardNumber: number;
+            cardExpire: number;
+            cardCVV: number;
+        };
+        shippingAddress: {
+            street: string;
+            city: string;
+            state: string;
+            postalCode: string;
+            country: string;
+        };
+    }>({
+        orderNumber: "",
+        purchaseDate: '',
+        items: [],
+        totalAmount: 0,
+        paymentDetails: {
+            cardName: '',
+            cardNumber: 0,
+            cardExpire: 0,
+            cardCVV: 0
+        },
+        shippingAddress: {
+            street: '',
+            city: '',
+            state: '',
+            postalCode: '',
+            country: ''
+        }
+    });
 
     const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const category = event.target.value;
@@ -127,6 +201,7 @@ export const Account = () => {
         setSubCategories(selectedCategory ? selectedCategory[1] : []);
     };
 
+    //!FILE FUNCTIONS
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             const files = Array.from(event.target.files || []);
@@ -188,6 +263,7 @@ export const Account = () => {
         });
     };
 
+    //!VENDOR FUNCTIONS
     const createVendor = async (event: React.FormEvent) => {
         event.preventDefault(); // Prevent default form submission
         const { name, description } = newVendor;
@@ -262,6 +338,7 @@ export const Account = () => {
         setEditVendorModal(false);
     }
 
+    //!PRODUCT FUNCTIONS
     const createProduct = async (event: React.FormEvent) => {
         event.preventDefault();
         const { name, description, category, subCategory, stock, price, imageUrls } = newProduct;
@@ -402,16 +479,131 @@ export const Account = () => {
                 mode: "cors"
             })
 
-            if(response.ok){
-                alert("product was deleted");
-                viewVendor();
-                setConfirmModal(false);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
             }
+
+            alert("product was deleted");
+            viewVendor();
+            setConfirmModal(false);
+
         }catch(error){
             console.error("Error deleting product");
         }
     }
+
+    //!PURCHASES FUNCTIONS
+    const getPurchaseHistory = async () =>{
+        try{
+            const response = await fetch(`http://localhost:3001/purchase/getAllPurchases`, {
+                method: "GET",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                mode: "cors"
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+
+            // Map the fetched data to the desired structure
+            const formattedPurchases = data.map((purchase: { _id: string, purchaseDate: string }) => ({
+                orderNumber: purchase._id,
+                purchaseDate: new Date(purchase.purchaseDate).toLocaleDateString()
+            }));
+
+            setAllPurchases(formattedPurchases);
+
+            console.log("Data", data);
+        }catch(error){
+            console.error("Error getting purchase history");
+        }
+    }
+
+    const getSpecificPurchase = async (orderId: string) =>{
+        try{
+            const response = await fetch(`http://localhost:3001/purchase/getPurchase/${orderId}`, {
+                method: "GET",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }, 
+                mode: "cors"
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+
+            setSpecificPurchase({
+                orderNumber: orderId,
+                purchaseDate: formatDate(data.purchaseDate),
+                items: data.items.map((item: { productId: { _id: string; name: string; description: string; price: number; imageUrls: string[]; category: string; subCategory: string; stock: number; vendor: string; }; quantity: number; price: number; }) => ({
+                    productId: {
+                        _id: item.productId._id,
+                        name: item.productId.name,
+                        description: item.productId.description,
+                        price: item.productId.price,
+                        imageUrls: item.productId.imageUrls,
+                        category: item.productId.category,
+                        subCategory: item.productId.subCategory,
+                        stock: item.productId.stock,
+                        vendor: item.productId.vendor
+                    },
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                totalAmount: data.totalAmount,
+                paymentDetails: {
+                    cardName: data.paymentDetails.cardName,
+                    cardNumber: data.paymentDetails.cardNumber,
+                    cardExpire: data.paymentDetails.cardExpire,
+                    cardCVV: data.paymentDetails.cardCVV
+                },
+                shippingAddress: {
+                    street: data.shippingAddress.street,
+                    city: data.shippingAddress.city,
+                    state: data.shippingAddress.state,
+                    postalCode: data.shippingAddress.postalCode,
+                    country: data.shippingAddress.country
+                }
+            });
+
+        }catch(error){
+            console.error("Error geting specific purchase");
+        }
+    }
+
+    //!USE EFFECTS 
+    useEffect(() => {
+        if (userRole === "vendor") {
+            viewVendor();
+        }
+        return () => {
+            //used to relese the memory allocated for the object URL
+            imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+        };
+    }, [imagePreviews]);
+
+    useEffect(() =>{
+        getPurchaseHistory();
+    },[])
+
+    useEffect(() => {
+        //if currProduct.category has a value then find the subcategories for it
+        if (currProduct.category) {
+            const selectedCategory = categories.find(([cat]) => cat === currProduct.category);
+            setSubCategories(selectedCategory ? selectedCategory[1] : []);
+        }
+    }, [currProduct.category]);
     
+    //!RENDERS CONTENT IN SETTINGS
     const renderContent = () => {
         switch (currContent) {
             case "profile":
@@ -539,15 +731,83 @@ export const Account = () => {
             case "purchases":
                 return (
                     <div>
-                        <h1>Purchase History View</h1>
-                        {/* Add purchase history content here */}
+                        <h1 className="purchaseHeader">Purchase History View</h1>
+                        <div className="purchaseHistoryContainer">
+                            {allPurchases.length > 0 ? (
+                                allPurchases.map((purchase, index) => (
+                                    <div key={index} className="purchaseOrderContainer" onClick={() =>{
+                                                getSpecificPurchase(purchase.orderNumber);
+                                                setCurrContent("specificPurchase");
+                                            }}>
+                                        <p>Order Number: {purchase.orderNumber}</p>
+                                        <p>Purchased Date: {new Date(purchase.purchaseDate).toLocaleDateString()}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No purchases found.</p>
+                            )}
+                        </div>
+                    </div>
+                );
+            case "specificPurchase":
+                return(
+                    <div>
+                        <div className="backAccBtnContainer">
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                            {/* -1 allows you to navigate to the page before */}
+                            <button className="backBtn" onClick={() => setCurrContent("purchases")}> Back to previous page </button>
+                        </div>
+                        <div>
+                            <h1> Order Summary </h1>
+                            <p> Order Number: {specificPurchase.orderNumber} </p>
+                            <br></br>
+                            <h2> Shipping Address </h2>
+                            <div className="shippingInfo">
+                                <p> {specificPurchase.shippingAddress.street} </p>
+                                <p> {specificPurchase.shippingAddress.city}, {specificPurchase.shippingAddress.state} {specificPurchase.shippingAddress.postalCode}</p>
+                                <p> {specificPurchase.shippingAddress.country} </p>
+                            </div>
+                            
+                            <br></br>
+                            <h2> Payment Details </h2>
+                            <p> Payment Method: Debit Card </p>
+                            <p>
+                                Card ending in: **** **** **** {specificPurchase.paymentDetails.cardNumber.toString().slice(-4)}
+                            </p>
+                            <br></br>
+                            <h2>Products</h2>
+                            <div className="purchaseDetails">
+                                {specificPurchase.items.map((item, index) => (
+                                    <div key={index} className="itemDetailContainer">
+                                        <div className="productInfo">
+                                            <div className="contain1">
+                                                <p className="productName">{item.productId.name}</p>
+                                                <p className="productCategory">{item.productId.category} | {item.productId.subCategory} </p>
+                                            </div>
+                                            
+                                            <p>Description: {item.productId.description}</p>
+                                            <br></br>
+                                            <p className="productPrice">Price: ${item.productId.price.toFixed(2)}x{item.quantity}</p>
+                                        </div>
+                                        
+                                        <img src={item.productId.imageUrls[0]} alt={item.productId.name} />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="summaryPrice">
+                                <p> Subtotal: ${specificPurchase.totalAmount - 3}</p>
+                                <p> Shipping: $3 </p>
+                                <p> Total: ${specificPurchase.totalAmount} </p>
+                            </div>
+                            
+                        </div>
                     </div>
                 );
             case "settings":
                 return (
                     <div>
                         <h1> Settings </h1>
-                        <button onClick={() => {
+                        <button className="logoutBtn" onClick={() => {
                             localStorage.setItem("isLogged", "false");
                             navigate('/')
                         }}> Log out </button>
@@ -558,28 +818,8 @@ export const Account = () => {
         }
     };
 
-    const closeModal = () => setNewProductModal(false);
-
-    useEffect(() => {
-        if (userRole === "vendor") {
-            viewVendor();
-        }
-        return () => {
-            //used to relese the memory allocated for the object URL
-            imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
-        };
-    }, [imagePreviews]);
-
-    useEffect(() => {
-        //if currProduct.category has a value then find the subcategories for it
-        if (currProduct.category) {
-            const selectedCategory = categories.find(([cat]) => cat === currProduct.category);
-            setSubCategories(selectedCategory ? selectedCategory[1] : []);
-        }
-    }, [currProduct.category]);
-
     return (
-        <>
+        <div className="accPage">
             <Header />
             <div className="accPageContainer">
                 <div className="sideContainer">
@@ -604,7 +844,8 @@ export const Account = () => {
                     {renderContent()}
                 </div>
             </div>
-            <Modal show={newProductModal} onClose={closeModal}>
+
+            <Modal show={newProductModal} onClose={() =>{setNewProductModal(false)}}>
                 <div>
                     <h1> Add a new product </h1>
                     <form className="productForm" onSubmit={createProduct}>
@@ -858,6 +1099,6 @@ export const Account = () => {
                     </div>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 };
