@@ -1,4 +1,3 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faPhone, faComment } from '@fortawesome/free-solid-svg-icons';
 import { Carousel } from 'react-responsive-carousel';
@@ -17,9 +16,9 @@ import { Navbar } from '../components/Navbar';
 const Home = () => {
     const navigate = useNavigate();
 
-    const getProducts = async () =>{
+    // const getProducts = async () =>{
         
-    }
+    // }
 
     return (
         <div>

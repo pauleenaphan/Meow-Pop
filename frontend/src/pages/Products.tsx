@@ -13,7 +13,6 @@ export const Products = () =>{
     }>({
         products: []
     });
-    const isDivisibleByFour = products.products.length % 4 === 0; //checks so that we can fix spacing
 
     const [categories] = useState<[string, string[]][]>([
         ["Clothes", ["Costumes", "Hats"]],
@@ -71,7 +70,7 @@ export const Products = () =>{
                 return { mainCategory: cat, subCategories: categoryPair[1] };
             } else {
                 // Check if 'cat' is a subcategory of any main category
-                const mainCategoryPair = categories.find(([mainCategory, subCategories]) =>
+                const mainCategoryPair = categories.find(([subCategories]) =>
                     subCategories.includes(cat)
                 );
                 

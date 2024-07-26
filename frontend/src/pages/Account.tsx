@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, ChangeEvent, useEffect, useCallback, FormEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
 import Modal from '../components/Modal';
@@ -135,6 +135,8 @@ export const Account = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [subCategories, setSubCategories] = useState<string[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+    console.log(selectedCategory);
 
     //!PURCHASE USESTATES   
     const [allPurchases, setAllPurchases] = useState<{
