@@ -26,6 +26,9 @@ export const Account = () => {
     const token = localStorage.getItem("token");
     const vendorId = localStorage.getItem("userRoleId");
     const userRole = localStorage.getItem("userRole");
+    const userName = localStorage.getItem("userName");
+    const userEmail = localStorage.getItem("userEmail");
+
     //!MODAL USESTATES
     const [newProductModal, setNewProductModal] = useState<boolean>(false);
     const [editVendorModal, setEditVendorModal] = useState<boolean>(false);
@@ -613,11 +616,11 @@ export const Account = () => {
                         <div className="profileInfoContainer">
                             <div className="infoContainer">
                                 <h3> Email: </h3>
-                                <p> {vendorInfo.user.email} </p>
+                                <p> {userEmail} </p>
                             </div>
                             <div className="infoContainer">
                                 <h3> Username: </h3>
-                                <p> {vendorInfo.user.username} </p>
+                                <p> {userName} </p>
                             </div>
                             <div className="infoContainer">
                                 <h3> Current Role: </h3>
@@ -625,7 +628,7 @@ export const Account = () => {
                             </div>
                             <div className="infoContainer">
                                 <h3> VendorId: </h3>
-                                <p> {vendorId} </p>
+                                <p> {userRole === "vendor" ? vendorId : "Become a vendor to get an ID"} </p>
                             </div>
                             
                         </div>

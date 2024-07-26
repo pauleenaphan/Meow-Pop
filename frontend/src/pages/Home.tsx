@@ -17,6 +17,10 @@ import { Navbar } from '../components/Navbar';
 const Home = () => {
     const navigate = useNavigate();
 
+    const getProducts = async () =>{
+        
+    }
+
     return (
         <div>
             <Navbar/>

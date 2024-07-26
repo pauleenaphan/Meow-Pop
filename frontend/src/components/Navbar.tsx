@@ -125,7 +125,7 @@ export const Navbar = () =>{
                     <p className="caption">Everything your cat deserves</p>
                 </div>
                 <div className="icons">
-                    <FontAwesomeIcon icon={faMagnifyingGlass}/>
+                    {/* <FontAwesomeIcon icon={faMagnifyingGlass}/> */}
                     <FontAwesomeIcon icon={faCartShopping} onClick={() =>{
                                                                 if(isLoggedIn){
                                                                     getCart();

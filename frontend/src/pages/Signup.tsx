@@ -69,7 +69,7 @@ export const Signup = () =>{
                     <div className="inputContainer">
                         <label> Email: </label>
                         <input 
-                            type="text" 
+                            type="email"
                             placeholder="Email"
                             onChange={(e) => updateUserData('email', e.target.value)}
                             required={true}

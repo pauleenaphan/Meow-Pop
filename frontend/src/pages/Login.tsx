@@ -46,6 +46,7 @@ export const Login = () =>{
                 localStorage.setItem('userRoleId', data.roleId);
                 localStorage.setItem('isLogged', "true");
                 localStorage.setItem('cartId', data.cartId);
+                getUser();
 
                 navigate("/");
             }else{
@@ -55,6 +56,30 @@ export const Login = () =>{
             console.error("Error logging in: ", error);
         }
     }
+
+    const getUser = async() =>{
+        try{
+            const response = await fetch(`http://localhost:3001/auth/getUser/${userData.email}`,{
+                method: "GET",
+                headers: { 
+                    "Content-Type": "application/json",
+                },
+                mode: "cors",
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+            localStorage.setItem("userEmail", data.email);
+            localStorage.setItem("userName", data.username);
+        }catch(error){
+            console.error("Errong getting user");
+        }
+    }
+
+    
 
     return(
         <div>
