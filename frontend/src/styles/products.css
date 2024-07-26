@@ -4,6 +4,8 @@
     gap: 30px;
     flex-wrap: wrap;
     padding: 50px;
+    width: fit-content;
+
 }
 
 .productHeaderInfo{
@@ -12,20 +14,20 @@
 }
 
 /* only applies where there are 4 products on EVERY row */
-.allProducts.evenSpacing{
+.allProducts{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
+    justify-content: left;
+    gap: 30px;
 }
 
-.allProducts.defaultSpacing {
+/* .allProducts.defaultSpacing {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 27px;
-}
+} */
 
 .productOuterContainer .productContainer{
     display: flex;
@@ -37,8 +39,7 @@
     transition: transform 0.3s ease;
     text-align: center;
     cursor: pointer;
-    width: 32vh;
-    height: 35vh;
+    width: 30vh;
 }
 
 .productOuterContainer .productContainer:hover {

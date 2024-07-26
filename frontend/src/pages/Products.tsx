@@ -122,7 +122,8 @@ export const Products = () =>{
                     <p> Showing results 1...3</p>
                     <p> Sort By: Ratings </p>
                 </div>
-                <div className={`allProducts ${isDivisibleByFour ? 'evenSpacing' : 'defaultSpacing'}`}>
+                {/* <div className={`allProducts ${isDivisibleByFour ? 'evenSpacing' : 'defaultSpacing'}`}> */}
+                <div className="allProducts">
                     {products.products.length > 0 ? (
                         products.products.map(product => (
                             <div key={product._id} className="productContainer" onClick={() => { navigate(`/productView/${product._id}`) }}>
