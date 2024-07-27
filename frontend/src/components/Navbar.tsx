@@ -64,7 +64,7 @@ export const Navbar = () =>{
 
     const getCart = async () =>{
         try{
-            const response = await fetch(`http://localhost:3001/cart/viewCart`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/cart/viewCart`, {
                 method: "GET",
                 headers:{
                     "Authorization": `Bearer ${token}`
@@ -81,7 +81,7 @@ export const Navbar = () =>{
 
     const removeCartItem = async () =>{
         try{
-            const response = await fetch(`http://localhost:3001/cart/removeItem/${confirmModal.productId}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/cart/removeItem/${confirmModal.productId}`, {
                 method: "DELETE",
                 headers:{
                     "Content-Type": "application/json",

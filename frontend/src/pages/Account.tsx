@@ -273,7 +273,7 @@ export const Account = () => {
         event.preventDefault(); // Prevent default form submission
         const { name, description } = newVendor;
         try {
-            const response = await fetch(`http://localhost:3001/vendor/createVendor`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/vendor/createVendor`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -293,7 +293,7 @@ export const Account = () => {
 
     const viewVendor = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/vendor/viewVendor/${vendorId}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/vendor/viewVendor/${vendorId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -321,7 +321,7 @@ export const Account = () => {
         event.preventDefault();
         const { storeName, storeDescription } = vendorInfo;
         try{
-            const response = await fetch(`http://localhost:3001/vendor/editVendor/${vendorId}`,{
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/vendor/editVendor/${vendorId}`,{
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

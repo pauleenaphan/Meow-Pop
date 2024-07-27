@@ -37,7 +37,7 @@ export const Signup = () =>{
         }
 
         try{
-            const response = await fetch(`http://localhost:3001/auth/signup`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/auth/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

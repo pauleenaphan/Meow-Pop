@@ -38,7 +38,7 @@ export const ProductView = () =>{
 
     const getProduct = async () =>{
         try{
-            const response = await fetch(`http://localhost:3001/product/getProduct/${productId}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/getProduct/${productId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export const ProductView = () =>{
             return;
         }
         try{
-            const response = await fetch(`http://localhost:3001/cart/addItem/${productId}`,{
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/cart/addItem/${productId}`,{
                 method: "POST",
                 headers:{
                     "Content-Type": "application/json",

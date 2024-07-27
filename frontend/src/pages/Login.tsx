@@ -30,7 +30,7 @@ export const Login = () =>{
         const { email, password } = userData;
 
         try{
-            const response = await fetch(`http://localhost:3001/auth/login`,{
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/auth/login`,{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export const Login = () =>{
 
     const getUser = async() =>{
         try{
-            const response = await fetch(`http://localhost:3001/auth/getUser/${userData.email}`,{
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/auth/getUser/${userData.email}`,{
                 method: "GET",
                 headers: { 
                     "Content-Type": "application/json",

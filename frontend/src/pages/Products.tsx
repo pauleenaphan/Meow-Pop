@@ -34,7 +34,7 @@ export const Products = () =>{
                 categories.forEach(cat => params.append('category', cat));
             }
     
-            const url = `http://localhost:3001/product/getAllProducts?${params.toString()}`;
+            const url = `https://backend-wild-log-8565.fly.dev/product/getAllProducts?${params.toString()}`;
             console.log(`Fetching: ${url}`);
     
             const response = await fetch(url, {
