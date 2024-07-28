@@ -106,7 +106,7 @@ export const Checkout = () =>{
 
     const getCart = async () =>{
         try{
-            const response = await fetch(`http://localhost:3001/cart/viewCart`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/cart/viewCart`, {
                 method: "GET",
                 headers:{
                     "Authorization": `Bearer ${token}`
@@ -135,7 +135,7 @@ export const Checkout = () =>{
         const { paymentDetails, shippingAddress } = purchase;
 
         try{
-            const response = await fetch(`http://localhost:3001/purchase/buyItems/${cartId}`,{
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/purchase/buyItems/${cartId}`,{
                 method: "POST",
                 headers:{
                     "Content-Type": "application/json",

@@ -362,7 +362,7 @@ export const Account = () => {
         });
 
         try {
-            const response = await fetch(`http://localhost:3001/product/createProduct/${vendorId}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/createProduct/${vendorId}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -394,7 +394,7 @@ export const Account = () => {
 
     const getProduct = async (productId: string) =>{
         try{
-            const response = await fetch(`http://localhost:3001/product/getProduct/${productId}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/getProduct/${productId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -453,7 +453,7 @@ export const Account = () => {
         });
     
         try {
-            const response = await fetch(`http://localhost:3001/product/editProduct/${currProduct.id}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/editProduct/${currProduct.id}`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -475,7 +475,7 @@ export const Account = () => {
 
     const removeProduct = async () =>{
         try{
-            const response = await fetch(`http://localhost:3001/product/deleteProduct/${currProduct.id}/${vendorId}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/deleteProduct/${currProduct.id}/${vendorId}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -500,7 +500,7 @@ export const Account = () => {
     //!PURCHASES FUNCTIONS
     const getPurchaseHistory = async () =>{
         try{
-            const response = await fetch(`http://localhost:3001/purchase/getAllPurchases`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/purchase/getAllPurchases`, {
                 method: "GET",
                 headers:{
                     "Content-Type": "application/json",
@@ -531,7 +531,7 @@ export const Account = () => {
 
     const getSpecificPurchase = async (orderId: string) =>{
         try{
-            const response = await fetch(`http://localhost:3001/purchase/getPurchase/${orderId}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/purchase/getPurchase/${orderId}`, {
                 method: "GET",
                 headers:{
                     "Content-Type": "application/json",
