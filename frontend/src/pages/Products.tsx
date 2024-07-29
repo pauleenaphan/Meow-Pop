@@ -13,6 +13,10 @@ export const Products = () =>{
     }>({
         products: []
     });
+    const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+    const handleCategoryClick = (mainCategory: string) => {
+        setExpandedCategory(expandedCategory === mainCategory ? null : mainCategory);
+    };
 
     const [categories] = useState<[string, string[]][]>([
         ["Clothes", ["Costumes", "Hats"]],
@@ -56,38 +60,6 @@ export const Products = () =>{
             console.error("Error getting products", error);
         }
     };
-
-    const getSubcategories = () => {
-        if (!category) return [];
-        
-        const categoryList = category.split(',');
-        const subcategories = categoryList.map(cat => {
-            // Check if 'cat' is a main category
-            const categoryPair = categories.find(([mainCategory]) => mainCategory === cat);
-            
-            if (categoryPair) {
-                // If 'cat' is a main category, return its subcategories
-                return { mainCategory: cat, subCategories: categoryPair[1] };
-            } else {
-                // Check if 'cat' is a subcategory of any main category
-                const mainCategoryPair = categories.find(([subCategories]) =>
-                    subCategories.includes(cat)
-                );
-                
-                // If found, return the main category and its subcategories
-                if (mainCategoryPair) {
-                    return { mainCategory: mainCategoryPair[0], subCategories: mainCategoryPair[1] };
-                }
-                
-                // If 'cat' is neither a main category nor a valid subcategory
-                return { mainCategory: cat, subCategories: [] };
-            }
-        });
-        
-        return subcategories;
-    };
-
-    const subcategories = getSubcategories();
     
     useEffect(() => {
         getProducts();
@@ -98,19 +70,35 @@ export const Products = () =>{
         <Navbar />
         <div className="productPageContainer">
             <div className="categorySideContainer">
-                <h1>Products</h1>
-                {subcategories.map(({ mainCategory, subCategories }) => (
-                    <div key={mainCategory} onClick={(e) =>{ 
-                        e.stopPropagation();
-                        navigate(`/products/${mainCategory}`)}}
-                        className="categoryContainer">
-                        <p className="mainCategory">{mainCategory}</p>
-
-                        {subCategories.map(subCategory => (
-                            <p key={subCategory} onClick={(e) =>{ 
+                {categories.map(([mainCategory, subCategories]) => (
+                    <div
+                        key={mainCategory}
+                        className="categoryContainer"
+                    >
+                        <p
+                            className="mainCategory"
+                            onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/products/${subCategory}`)}}>{subCategory}</p>
-                        ))}
+                                handleCategoryClick(mainCategory);
+                            }}
+                        >
+                            {mainCategory}
+                        </p>
+                        <div
+                            className={`subCategoryDropdown ${expandedCategory === mainCategory ? 'open' : 'closed'}`}
+                        >
+                            {subCategories.map(subCategory => (
+                                <p
+                                    key={subCategory}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/products/${subCategory}`);
+                                    }}
+                                >
+                                    {subCategory}
+                                </p>
+                            ))}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -121,7 +109,6 @@ export const Products = () =>{
                     <p> Showing results 1...3</p>
                     <p> Sort By: Ratings </p>
                 </div>
-                {/* <div className={`allProducts ${isDivisibleByFour ? 'evenSpacing' : 'defaultSpacing'}`}> */}
                 <div className="allProducts">
                     {products.products.length > 0 ? (
                         products.products.map(product => (
@@ -137,7 +124,6 @@ export const Products = () =>{
                 </div>
             </div>
         </div>
-        
     </div>
     )
     

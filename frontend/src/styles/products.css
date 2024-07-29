@@ -4,8 +4,7 @@
     gap: 30px;
     flex-wrap: wrap;
     padding: 50px;
-    width: fit-content;
-
+    width: 90%;
 }
 
 .productHeaderInfo{
@@ -13,21 +12,13 @@
     justify-content: space-between;
 }
 
-/* only applies where there are 4 products on EVERY row */
 .allProducts{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: left;
-    gap: 30px;
+    gap: 20px;
 }
-
-/* .allProducts.defaultSpacing {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 27px;
-} */
 
 .productOuterContainer .productContainer{
     display: flex;
@@ -54,7 +45,7 @@
 
 .productPageContainer{
     display: grid;
-    grid-template-columns: 1fr  auto 4fr;
+    grid-template-columns: 1fr auto 5fr;
 }
 
 .productDivider{
@@ -63,31 +54,39 @@
     margin: 20px 0px;
 }
 
-.categorySideContainer p{
-    cursor: pointer;
-    font-size: 18px;
-}
-
-.categorySideContainer p:hover{
-    background-color: #468189;
-    color: white;
-    border-radius: 5px;
-    padding: 0px 10px;
-}
-
 .categorySideContainer{
     padding: 50px;
     display: flex;
     flex-direction: column;
 }
 
-.categoryContainer{
-    padding-bottom: 10px;
+.categorySideContainer p:hover{
+    background-color: #f4f4f4;
+    color: #062c42;
+    border-radius: 5px;
+    padding: 0px 10px;
+    cursor: pointer;
 }
 
 .mainCategory{
-    font-size: 26px !important;
-    font-weight: 500;
+    font-size: 20px;
+    /* font-weight: bold; */
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.subCategoryDropdown{
+    overflow: hidden; /* Hide overflow to handle smooth transitions */
+    max-height: 0; /* Start with hidden state */
+    opacity: 0;
+    transition: max-height 0.3s ease-out; /* Smooth transition */
+    padding: 5px 0px 5px 10px;
+    border-left: 2px solid #ddd;
+}
+
+.subCategoryDropdown.open {
+    max-height: 500px; /* Arbitrary value larger than the content height */
+    opacity: 1;
 }
 
 /* !Specific products */

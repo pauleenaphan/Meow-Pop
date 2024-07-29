@@ -136,7 +136,7 @@ export const Account = () => {
     const [subCategories, setSubCategories] = useState<string[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-    console.log(selectedCategory);
+    // console.log(selectedCategory);
 
     //!PURCHASE USESTATES   
     const [allPurchases, setAllPurchases] = useState<{

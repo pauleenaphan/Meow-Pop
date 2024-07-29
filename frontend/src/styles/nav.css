@@ -88,7 +88,7 @@ nav ul{
     bottom: 0; 
     width: 100%;
     height: 2px; 
-    background-color: #252525;; 
+    background-color: #252525;
     transform: scaleX(0); 
     transform-origin: bottom left; 
     transition: transform 0.3s ease, background-color 0.3s ease;
@@ -105,7 +105,7 @@ nav ul{
 }
 
 /* !dropdown menu */
-nav ul li {
+/* nav ul li {
     position: relative; 
 }
 
@@ -124,19 +124,77 @@ nav ul li .dropdown {
     margin-left: -20px;
     position: absolute;
     background-color: #9DBEBB;
-    border: solid 2px #7ca09d;
-    width: fit-content;
+    width: 300%;
     border-radius: 5px;
 }
 
 nav ul li:hover .dropdown {
-    display: block; /* Show the dropdown on hover */
+    display: block; 
 }
 
 nav ul li .dropdown li a:hover, nav ul li .dropdown li h1:hover {
     color: #062c42;
     cursor: pointer;
     text-decoration: none !important;
+} */
+
+nav ul li {
+    position: relative;
+}
+
+nav ul li a.categories {
+    font-size: 20px;
+    display: block;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    padding: 10px;
+}
+
+nav ul li a.categories:hover {
+    color: #333;
+    font-weight: bold;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%; /* Positions the dropdown below the parent */
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 200px; /* Adjust the width as needed */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensures dropdown appears above other elements */
+}
+
+nav ul li:hover .dropdown {
+    display: block;
+}
+
+.dropdown h1,
+.dropdown a {
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    padding: 5px;
+    display: block;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown h1:hover,
+.dropdown a:hover {
+    background-color: #f4f4f4;
+    color: #062c42;
+}
+
+.dropdown a {
+    border-bottom: 1px solid #ddd; /* Adds a separator between items */
+}
+
+.dropdown a:last-child {
+    border-bottom: none; /* Removes the separator from the last item */
 }
 
 /* !cart menu */
