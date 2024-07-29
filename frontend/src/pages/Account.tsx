@@ -454,7 +454,7 @@ export const Account = () => {
     
         try {
             const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/editProduct/${currProduct.id}`, {
-                method: "PATCH",
+                method: "PUT",
                 headers: {
                     "Authorization": `Bearer ${token}`
                 },
