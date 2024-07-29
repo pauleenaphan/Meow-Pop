@@ -8,7 +8,9 @@ import homepageCat1 from '../assets/homepageCat1.jpg';
 import homepageCat2 from "../assets/homepageCat2.jpg";
 import homepageCat3 from "../assets/homepageCat3.jpg";
 
-import catBed from "../assets/catBed.jpg";
+import newestProduct1 from "../assets/products/astralCollar.jpg";
+import newestProduct2 from "../assets/products/pirateCostume.avif";
+import newestProduct3 from "../assets/products/snailBed.webp";
 
 import "../styles/home.css";
 import { Navbar } from '../components/Navbar';
@@ -97,26 +99,25 @@ const Home = () => {
                 <section className="newestArrivalContainer">
                     <h1> Newest Arrivals </h1>
                     <div className="itemOuterContainer">
-                        <div className="itemContainer">
-                            <img src = {catBed} alt="catbed"></img>
+                        <div className="itemContainer" onClick={() => { navigate(`/productView/669eba21bc6497a8731fc755`)}}>
+                            <img src = {newestProduct1} alt="astral collar"></img>
                             <div className="textContainer">
-                                <p> Cozy Cat Bed </p>
-                                <p> $30.99 </p>
-                            </div>
-                            
-                        </div>
-                        <div className="itemContainer">
-                            <img src = {catBed} alt="catbed"></img>
-                            <div className="textContainer">
-                                <p> Cozy Cat Bed </p>
-                                <p> $30.99 </p>
+                                <p> Astral Cat Collar </p>
+                                <p> $11.99 </p>
                             </div>
                         </div>
-                        <div className="itemContainer">
-                            <img src = {catBed} alt="catbed"></img>
+                        <div className="itemContainer" onClick={() => { navigate(`/productView/669eb3bebc6497a8731fc62d`)}}>
+                            <img src = {newestProduct2} alt="cat pirate costume"></img>
                             <div className="textContainer">
-                                <p> Cozy Cat Bed </p>
-                                <p> $30.99 </p>
+                                <p> Captain Kitty Pirate Costume </p>
+                                <p> $28.99 </p>
+                            </div>
+                        </div>
+                        <div className="itemContainer" onClick={() => { navigate(`/productView/66a2c53d668a458b0a7ccbd5`)}}>
+                            <img src = {newestProduct3} alt="cat snail bed"></img>
+                            <div className="textContainer">
+                                <p> Snail Cat Bed </p>
+                                <p> $22.99 </p>
                             </div>
                         </div>
                     </div>
