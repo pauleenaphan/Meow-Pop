@@ -119,7 +119,7 @@ export const Products = () =>{
                             </div>
                         ))
                     ) : (
-                        <p>No products found.</p>
+                        <p> Loading Products... </p>
                     )}
                 </div>
             </div>
