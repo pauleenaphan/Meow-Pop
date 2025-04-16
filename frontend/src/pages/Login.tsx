@@ -3,22 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
 import "../styles/login-create.css";
 import catShopping from "../assets/catShopping.jpg";
-
-type UserData = {
-    email: string;
-    password: string;
-};
+import { User } from "../types/userType";
+import { LoginUser } from "../api/userAPI";
 
 export const Login = () =>{
     const navigate = useNavigate(); 
-    const [userData, setUserData] = useState<UserData>({
+    const [userData, setUserData] = useState<User>({
         email: "",
         password: "",
     })
 
     const [loginStatus, setLoginStatus] = useState("");
 
-    const updateUserData = (postField: keyof UserData, userInput: string) =>{
+    const updateUserData = (postField: keyof User, userInput: string) =>{
         setUserData(prevData => ({
             ...prevData,
             [postField]: userInput
@@ -28,58 +25,14 @@ export const Login = () =>{
     const handleSubmit = async (e: FormEvent) =>{
         e.preventDefault();
         const { email, password } = userData;
+        const response = await LoginUser(email, password);
 
-        try{
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/auth/login`,{
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                mode: 'cors',
-                body: JSON.stringify({ email, password })
-            });
-
-            if(response.ok){
-                const data = await response.json();
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userRole', data.role);
-                localStorage.setItem('userRoleId', data.roleId);
-                localStorage.setItem('isLogged', "true");
-                localStorage.setItem('cartId', data.cartId);
-                getUser();
-
-                navigate("/");
-            }else{
-                setLoginStatus(await response.text());
-            }
-        }catch(error){
-            console.error("Error logging in: ", error);
+        if(response == true){
+            navigate("/");
+        }else{
+            setLoginStatus(response || "Error logging in");
         }
-    }
-
-    const getUser = async() =>{
-        try{
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/auth/getUser/${userData.email}`,{
-                method: "GET",
-                headers: { 
-                    "Content-Type": "application/json",
-                },
-                mode: "cors",
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
-            }
-
-            const data = await response.json();
-            localStorage.setItem("userEmail", data.email);
-            localStorage.setItem("userName", data.username);
-        }catch(error){
-            console.error("Errong getting user");
-        }
-    }
-
-    
+    }  
 
     return(
         <div>
