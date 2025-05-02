@@ -1,5 +1,6 @@
 const token = localStorage.getItem("token");
 const isLogged = localStorage.getItem("isLogged");
+const vendorId = localStorage.getItem("userRoleId");
 
 export const getProductsByCategory = async (category?: string) =>{
     console.log(category);
@@ -63,5 +64,28 @@ export const getProduct = async(productId?: string) =>{
         return data;
     }catch(error){
         console.error("Error getting product")
+    }
+}
+
+export const removeProduct = async(productId: string) =>{
+    try{
+        const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/deleteProduct/${productId}/${vendorId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            mode: "cors"
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
+        }
+
+        alert("product was deleted");
+
+        return true;
+    }catch(error){
+        console.error("Error deleting product");
     }
 }

@@ -8,6 +8,13 @@ import "../styles/account.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faMoneyBill, faClockRotateLeft, faGear, faArrowLeft  } from '@fortawesome/free-solid-svg-icons';
 
+import { Product, PurchaseDetails } from "../types/productTypes";
+
+import { getProduct, removeProduct } from "../api/productAPI";
+
+import { createVendor, viewVendor, editVendor } from "../api/vendorAPI";
+
+import { categories } from "../data/categories";
 
 const formatDate = (dateString: string) => {
     // Convert the date string to a Date object
@@ -35,26 +42,22 @@ export const Account = () => {
     const [editProductModal, setEditProductModal] = useState<boolean>(false);
     const [confirmModal, setConfirmModal] = useState<boolean>(false);
 
-    const [currContent, setCurrContent] = useState<string>("profile");
+    const [currContent, setCurrContent] = useState<string>("Profile");
 
-    const [currProduct, setCurrProduct] = useState<{
-        id: string,
-        name: string, 
-        description: string,
-        category: string,
-        subCategory: string,
-        stock: number,
-        price: number,
-        imageUrls: (string | File)[]
-    }>({
-        id: "",
+    const [currProduct, setCurrProduct] = useState<Product>
+    ({
+        _id: "",
         name: "",
         description: "",
         category: "",
         subCategory: "",
         stock: 0,
-        price: 0,
+        price: "",
         imageUrls: []
+    })
+
+    useEffect(() =>{ 
+        document.title = `${currContent} | MeowPop `
     })
 
     const updateCurrProduct = (postField: keyof typeof currProduct, userInput: string | number | (string | File)[]) =>{
@@ -77,7 +80,7 @@ export const Account = () => {
         products: []
     });
 
-    const editVendor = (postField: keyof typeof vendorInfo, userInput: string) => {
+    const editVendorField = (postField: keyof typeof vendorInfo, userInput: string) => {
         setVendorInfo(prevData => ({
             ...prevData,
             [postField]: userInput
@@ -96,32 +99,13 @@ export const Account = () => {
         }));
     };
 
-    const [categories] = useState<[string, string[]][]>([
-        ["Clothes", ["Costumes", "Hats"]],
-        ["Toys", ["String Toys", "Balls", "Catnip Toys", "Plush Toys", "Laser Pointers"]],
-        ["Accessories", ["Collars", "Harnesses", "Bow Ties", "Carriers"]],
-        ["Furniture", ["Beds", "Trees", "Scratching Posts", "Window Perches"]],
-        ["Food", ["Dry Food", "Wet Food", "Catnip", "Treats"]],
-        ["Health", ["Vitamins", "Supplements", "Flea Prevention"]],
-        ["Grooming", ["Brushes", "Nail Clippers", "Shampoos", "Conditioners", "Ear Cleaners"]],
-        ["Litter", ["Litter Boxes", "Litter Mats", "Litter Scoops", "Odor Control"]]
-    ]);
-
-    const [newProduct, setNewProduct] = useState<{
-        name: string;
-        description: string;
-        category: string;
-        subCategory: string;
-        stock: number;
-        price: number;
-        imageUrls: File[];
-    }>({
+    const [newProduct, setNewProduct] = useState<Product>({
         name: "",
         description: "",
         category: "",
         subCategory: "",
         stock: 0,
-        price: 0,
+        price: "",
         imageUrls: []
     });
 
@@ -144,39 +128,7 @@ export const Account = () => {
         purchaseDate: string
     }[]>([])
 
-    const [specificPurchase, setSpecificPurchase] = useState<{
-        orderNumber: string;
-        purchaseDate: string;
-        items: {
-            productId: {
-                _id: string;
-                name: string;
-                description: string;
-                price: number;
-                imageUrls: string[];
-                category: string;
-                subCategory: string;
-                stock: number;
-                vendor: string;
-            };
-            quantity: number;
-            price: number;
-        }[];
-        totalAmount: number;
-        paymentDetails: {
-            cardName: string;
-            cardNumber: number;
-            cardExpire: number;
-            cardCVV: number;
-        };
-        shippingAddress: {
-            street: string;
-            city: string;
-            state: string;
-            postalCode: string;
-            country: string;
-        };
-    }>({
+    const [specificPurchase, setSpecificPurchase] = useState<PurchaseDetails>({
         orderNumber: "",
         purchaseDate: '',
         items: [],
@@ -269,77 +221,21 @@ export const Account = () => {
     };
 
     //!VENDOR FUNCTIONS
-    const createVendor = async (event: React.FormEvent) => {
-        event.preventDefault(); // Prevent default form submission
-        const { name, description } = newVendor;
-        try {
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/vendor/createVendor`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ storeName: name, storeDescription: description }),
-            });
-            if (response.ok) {
-                alert("Thank you for submitting your request! Please login again to check your status");
-                navigate("/login");
-                localStorage.setItem("isLogged", "false");
-            }
-        } catch (error) {
-            console.error("Error creating vendor", error);
+    const createNewVendor = async (event: React.FormEvent) =>{
+        const response = await createVendor(event, newVendor.name, newVendor.description);
+
+        if(response == true){
+            navigate("/login");
+        }else{
+            alert("Error creating Vendor");
         }
-    };
-
-    const viewVendor = async () => {
-        try {
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/vendor/viewVendor/${vendorId}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                mode: 'cors'
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
-            }
-
-            const data = await response.json();
-            setVendorInfo({
-                user: data.user,
-                storeName: data.storeName,
-                storeDescription: data.storeDescription,
-                products: data.products
-            });
-        } catch (error) {
-            console.error("Error getting specific vendor", error);
-        }
-    };
+    }
 
     const editVendorFunc = async (event: React.FormEvent) =>{
         event.preventDefault();
         const { storeName, storeDescription } = vendorInfo;
-        try{
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/vendor/editVendor/${vendorId}`,{
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                mode: "cors",
-                body: JSON.stringify({ storeName, storeDescription })
-            });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
-            }
-            
-            alert("Vendor has been edited");
-            viewVendor();
-        }catch(error){
-            console.error("Error editing vendor");
-        }
+        await editVendor(storeName, storeDescription);
         setEditVendorModal(false);
     }
 
@@ -385,43 +281,17 @@ export const Account = () => {
             category: "",
             subCategory: "",
             stock: 0,
-            price: 0,
+            price:"",
             imageUrls: []
         })
 
         setImagePreviews([]);
     };
 
-    const getProduct = async (productId: string) =>{
-        try{
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/getProduct/${productId}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                mode: "cors"
-            })
-            if(!response.ok){
-                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
-            }
-
-            const data = await response.json();
-            setCurrProduct({
-                id: productId,
-                name: data.name,
-                description: data.description,
-                category: data.category,
-                subCategory: data.subCategory,
-                stock: data.stock,
-                price: data.price,
-                imageUrls: data.imageUrls
-            })
-
-            setSelectedCategory(data.category);
-        }catch(error){
-            console.error("Error getting product")
-        }
+    const getCurrProduct = async (productId: string) =>{
+        const data = await getProduct(productId);
+        setCurrProduct(data);
+        setSelectedCategory(data.category);
     }
 
     const editProduct = async (event: React.FormEvent) => {
@@ -453,7 +323,7 @@ export const Account = () => {
         });
     
         try {
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/editProduct/${currProduct.id}`, {
+            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/editProduct/${currProduct._id}`, {
                 method: "PUT",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -473,27 +343,13 @@ export const Account = () => {
         }
     };
 
-    const removeProduct = async () =>{
-        try{
-            const response = await fetch(`https://backend-wild-log-8565.fly.dev/product/deleteProduct/${currProduct.id}/${vendorId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                mode: "cors"
-            })
+    const removeCurrProduct = async () =>{
+        if(!currProduct._id){ return null }
+        const response = await removeProduct(currProduct._id);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}, Message: ${await response.text()}`);
-            }
-
-            alert("product was deleted");
+        if(response == true){
             viewVendor();
             setConfirmModal(false);
-
-        }catch(error){
-            console.error("Error deleting product");
         }
     }
 
@@ -611,7 +467,7 @@ export const Account = () => {
     //!RENDERS CONTENT IN SETTINGS
     const renderContent = () => {
         switch (currContent) {
-            case "profile":
+            case "Profile":
                 return (
                     <div className="profileSettings">
                         <h1 className="profileHeader"> User Information </h1>
@@ -637,7 +493,7 @@ export const Account = () => {
                         
                     </div>
                 );
-            case "vendor":
+            case "Vendor":
                 if (userRole === "vendor") {
                     return (
                         <div className="vendorSettings">
@@ -677,11 +533,11 @@ export const Account = () => {
                                             </div>
                                             <div className="btnContainer">
                                                 <button onClick={() =>{
-                                                    getProduct(product._id);
+                                                    getCurrProduct(product._id);
                                                     setEditProductModal(true);
                                                 }}> Edit Product </button>
                                                 <button onClick={() =>{
-                                                    updateCurrProduct("id", product._id);
+                                                    updateCurrProduct("_id", product._id);
                                                     updateCurrProduct("name", product.name);
                                                     setConfirmModal(true);
                                                 }}> Remove Product </button>
@@ -707,7 +563,7 @@ export const Account = () => {
                                 After that please fill out this form below!
                             </p>
 
-                            <form className="vendorForm" onSubmit={(event) =>{createVendor(event)}}>
+                            <form className="vendorForm" onSubmit={(event) =>{createNewVendor(event)}}>
                                 <div className="inputContainer">
                                     <label>Store Name</label>
                                     <input
@@ -733,7 +589,7 @@ export const Account = () => {
                         </div>
                     );
                 }
-            case "purchases":
+            case "Purchases":
                 return (
                     <div>
                         <h1 className="purchaseHeader">Purchase History View</h1>
@@ -754,13 +610,13 @@ export const Account = () => {
                         </div>
                     </div>
                 );
-            case "specificPurchase":
+            case "SpecificPurchase":
                 return(
                     <div>
                         <div className="backAccBtnContainer">
                             <FontAwesomeIcon icon={faArrowLeft} />
                             {/* -1 allows you to navigate to the page before */}
-                            <button className="backBtn" onClick={() => setCurrContent("purchases")}> Back to previous page </button>
+                            <button className="backBtn" onClick={() => setCurrContent("Purchases")}> Back to previous page </button>
                         </div>
                         <div>
                             <h1> Order Summary </h1>
@@ -808,7 +664,7 @@ export const Account = () => {
                         </div>
                     </div>
                 );
-            case "settings":
+            case "Settings":
                 return (
                     <div>
                         <h1> Settings </h1>
@@ -828,19 +684,19 @@ export const Account = () => {
             <Header />
             <div className="accPageContainer">
                 <div className="sideContainer">
-                    <div className="rowContainer" onClick={() => setCurrContent("profile")}>
+                    <div className="rowContainer" onClick={() => setCurrContent("Profile")}>
                         <FontAwesomeIcon icon={faUser} /> Profile
                     </div>
                     <div className="rowContainer" onClick={() => {
-                        setCurrContent("vendor") 
+                        setCurrContent("Vendor") 
                         viewVendor()} 
                         }>
                         <FontAwesomeIcon icon={faGear} /> Vendor
                     </div>
-                    <div className="rowContainer" onClick={() => setCurrContent("purchases")}>
+                    <div className="rowContainer" onClick={() => setCurrContent("Purchases")}>
                         <FontAwesomeIcon icon={faMoneyBill} /> Purchases
                     </div>
-                    <div className="rowContainer" onClick={() => setCurrContent("settings")}>
+                    <div className="rowContainer" onClick={() => setCurrContent("Settings")}>
                         <FontAwesomeIcon icon={faClockRotateLeft} /> Settings
                     </div>
                 </div>
@@ -963,7 +819,7 @@ export const Account = () => {
                                 type="text"
                                 value={vendorInfo.storeName}
                                 placeholder="Your store name"
-                                onChange={(e) => editVendor("storeName", e.target.value)}
+                                onChange={(e) => editVendorField("storeName", e.target.value)}
                                 required={true}
                             />
                             
@@ -973,7 +829,7 @@ export const Account = () => {
                             <textarea
                                 value={vendorInfo.storeDescription}
                                 placeholder="Description about your company and what you sell"
-                                onChange={(e) => editVendor("storeDescription", e.target.value)}
+                                onChange={(e) => editVendorField("storeDescription", e.target.value)}
                                 required={true}
                             />
                         </div>
@@ -1099,7 +955,7 @@ export const Account = () => {
                     <p> Are you sure you want to remove this product? </p>
                     <h1> {currProduct.name} </h1>
                     <div className="btnContainer">
-                        <button className="removeBtn" onClick={removeProduct}> Confirm </button> 
+                        <button className="removeBtn" onClick={() =>{ removeCurrProduct()}}> Confirm </button> 
                         <button className="cancelBtn" onClick={() =>{ setConfirmModal(false)}}> Cancel </button>
                     </div>
                 </div>

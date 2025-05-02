@@ -45,6 +45,12 @@ export const ProductView = () =>{
         getCurrProduct();
     }, [])
 
+    useEffect(() =>{
+        if(currProduct?.name){
+            document.title = `${currProduct?.name} | MeowPop`
+        }
+    }, [currProduct])
+
     return(
         <div>
             <Navbar/>

@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
 import catShopping2 from "../assets/catShopping2.jpg";
@@ -57,6 +57,10 @@ export const Signup = () =>{
             alert("Server error");
         }
     };
+    
+    useEffect(() =>{
+        document.title = "Sign Up | MeowPop";
+    }, [])
     
     return(
         <div>

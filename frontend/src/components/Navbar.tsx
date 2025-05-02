@@ -126,14 +126,13 @@ export const Navbar = () =>{
                 </div>
                 <div className="icons">
                     {/* <FontAwesomeIcon icon={faMagnifyingGlass}/> */}
-                    <FontAwesomeIcon icon={faCartShopping} onClick={() =>{
-                                                                if(isLoggedIn){
-                                                                    getCart();
-                                                                }
-                                                                setShowCartModal(true);
-                                                    
-                                                                
-                                                            }}/>
+                    <FontAwesomeIcon icon={faCartShopping} 
+                        onClick={() =>{
+                        if(isLoggedIn){
+                            getCart();
+                        }
+                        setShowCartModal(true);
+                    }}/>
                     <FontAwesomeIcon icon={faUser} onClick={handleUserIconClick} />
                 </div>
             </section>

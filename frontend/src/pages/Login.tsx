@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from '../components/Header';
 import "../styles/login-create.css";
@@ -33,6 +33,11 @@ export const Login = () =>{
             setLoginStatus(response || "Error logging in");
         }
     }  
+
+    useEffect(() =>{
+        document.title = "Login | MeowPop";
+    }, [])
+    
 
     return(
         <div>

@@ -24,6 +24,7 @@ export const Products = () =>{
     }
     
     useEffect(() => {
+        document.title = `Shop for ${category} | MeowPop `;
         getProducts();
     }, [category]);
 
